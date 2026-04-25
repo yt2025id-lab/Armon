@@ -3,6 +3,8 @@ import { useAccount } from 'wagmi'
 import { WalletButton } from '@/components/WalletButton'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useAllPoolsWithDetails } from '@/hooks/useArmon'
+import { formatMON } from '@/lib/armonClient'
 import { t } from '@/lib/i18n'
 import {
   Plus,
@@ -15,6 +17,7 @@ import {
   ChevronRight,
   Globe,
   Trophy,
+  Loader2,
 } from 'lucide-react'
 
 // Mock pools for demo when contract not deployed
@@ -60,6 +63,46 @@ const mockPools = [
 export default function Home() {
   const { isConnected } = useAccount()
   const { lang, setLang } = useLanguage()
+  const { pools: realPools, loading: realPoolsLoading } = useAllPoolsWithDetails()
+
+  // Convert real pools to display format
+  const formatRealPool = (pool: any) => {
+    const iuranAmount = pool.iuranAmount ? Number(pool.iuranAmount) / 1e18 : 0
+    const maxParticipants = Number(pool.maxParticipants) || 0
+    const participantCount = Number(pool.participantCount) || 0
+    const currentPeriod = Number(pool.currentPeriod) || 1
+    const totalPeriods = Number(pool.totalPeriods) || 1
+    const isActive = pool.isActive
+
+    // Determine status
+    let status: 'active' | 'pending' | 'drawing' | 'completed' = 'pending'
+    if (!isActive) {
+      status = 'completed'
+    } else if (participantCount < maxParticipants) {
+      status = 'pending'
+    } else if (currentPeriod < totalPeriods) {
+      status = 'active'
+    } else {
+      status = 'drawing'
+    }
+
+    return {
+      id: Number(pool.id),
+      name: pool.name || `Pool #${pool.id}`,
+      iuranAmount: iuranAmount.toFixed(1),
+      maxParticipants,
+      currentPeriod,
+      totalPeriods,
+      isActive,
+      participants: participantCount,
+      prizeAmount: (iuranAmount * maxParticipants).toFixed(1),
+      status,
+      isReal: true,
+    }
+  }
+
+  // Combine mock pools with real pools (real pools first)
+  const allPools = [...realPools.map(formatRealPool), ...mockPools]
 
   return (
     <div className="min-h-screen bg-background">
@@ -206,11 +249,18 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockPools.map((pool) => (
-              <PoolCardDemo key={pool.id} pool={pool} />
-            ))}
-          </div>
+          {realPoolsLoading && realPools.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              <span className="ml-3 text-slate-400">{t('loading_pool', lang)}</span>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allPools.map((pool, idx) => (
+                <PoolCardDemo key={`${pool.isReal ? 'real' : 'mock'}-${pool.id}`} pool={pool} />
+              ))}
+            </div>
+          )}
 
           {!isConnected && (
             <div className="mt-8 p-6 bg-surface/50 rounded-xl border border-dashed border-slate-700 text-center">

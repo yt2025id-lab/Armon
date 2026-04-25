@@ -119,6 +119,46 @@ export function useActivePools() {
   return { data: activePoolIds, loading, error, refetch: fetchPools }
 }
 
+export function useAllPoolsWithDetails() {
+  const [pools, setPools] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchAllPools = useCallback(async () => {
+    try {
+      setLoading(true)
+      // Get pool count first
+      const count = await getPoolCount()
+      const poolCount = Number(count)
+
+      // Fetch all pools
+      const allPools = []
+      for (let i = 0; i < poolCount; i++) {
+        try {
+          const poolData = await getPool(i)
+          if (poolData) {
+            allPools.push({ id: i, ...poolData })
+          }
+        } catch (e) {
+          // Skip failed pool fetches
+        }
+      }
+      setPools(allPools)
+      setError(null)
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchAllPools()
+  }, [fetchAllPools])
+
+  return { pools, loading, error, refetch: fetchAllPools }
+}
+
 // ============ WRITE HOOKS ============
 
 export function useCreatePoolWrite() {

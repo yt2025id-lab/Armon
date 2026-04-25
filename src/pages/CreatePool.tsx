@@ -28,7 +28,7 @@ export default function CreatePool() {
   const { address, isConnected, chain } = useAccount()
   const { connect, connectors, isPending } = useConnect()
   const { switchChain } = useSwitchChain()
-  const { write, isLoading, isSuccess, error } = useCreatePoolWrite()
+  const { write, isLoading, isSuccess, error, txHash } = useCreatePoolWrite()
 
   // Direct wagmi balance query
   const { data: balance, isLoading: balanceLoading, refetch: refetchBalance } = useBalance({
@@ -160,17 +160,13 @@ export default function CreatePool() {
     }
   }, [balance, balanceLoading, directBalance, iuranAmount, isConnected])
 
-  const handleCreatePool = async () => {
-    if (!poolName) return
-
-    // Final check before submitting
-    if (!checkBalanceSufficiency()) {
-      setShowInsufficientBalance(true)
-      return
+  // Get the new pool ID from success and navigate to it
+  useEffect(() => {
+    if (isSuccess && txHash) {
+      // Navigate to pools page after successful creation
+      setTimeout(() => navigate('/'), 2000)
     }
-
-    await write(poolName, iuranAmount, maxParticipants, totalPeriods)
-  }
+  }, [isSuccess, txHash, navigate])
 
   // ============ WALLET NOT CONNECTED STATE ============
   if (!isConnected) {
@@ -384,8 +380,8 @@ export default function CreatePool() {
 
           {/* Tombol Buat Pool */}
           <Button
-            onClick={handleCreatePool}
-            disabled={!poolName || isLoading || showInsufficientBalance}
+            onClick={() => write(poolName, iuranAmount, maxParticipants, totalPeriods)}
+            disabled={!poolName || isLoading}
             className="w-full"
             size="lg"
             leftIcon={isLoading ? undefined : <Coins className="w-5 h-5" />}
