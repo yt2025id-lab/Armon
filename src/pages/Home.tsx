@@ -67,9 +67,7 @@ export default function Home() {
       <header className="border-b border-slate-800/50 backdrop-blur-sm bg-background/80 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30">
-              <span className="text-xl font-bold text-white">A</span>
-            </div>
+            <img src="/logo.png" alt="Armon" className="w-10 h-10 rounded-xl object-contain" />
             <span className="text-xl font-bold gradient-text">Armon</span>
           </Link>
           <div className="flex items-center gap-4">
@@ -248,9 +246,7 @@ export default function Home() {
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <span className="text-sm font-bold text-white">A</span>
-              </div>
+              <img src="/logo.png" alt="Armon" className="w-8 h-8 rounded-lg object-contain" />
               <span className="font-bold gradient-text">Armon</span>
             </div>
             <div className="text-center md:text-right">

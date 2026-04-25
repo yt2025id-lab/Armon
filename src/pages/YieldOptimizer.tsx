@@ -120,9 +120,9 @@ export default function YieldOptimizerPage() {
               <ArrowLeft className="w-5 h-5 text-slate-400" />
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+              <Link to="/">
+                <img src="/logo.png" alt="Armon" className="w-10 h-10 rounded-xl object-contain" />
+              </Link>
               <div>
                 <h1 className="text-lg font-semibold text-white">AI Yield Optimizer</h1>
                 <p className="text-sm text-slate-400">Ekosistem Monad</p>
