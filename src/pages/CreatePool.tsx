@@ -4,13 +4,20 @@ import { useAccount, useConnect, useBalance } from 'wagmi'
 import { Button } from '@/components/ui/Button'
 import { useCreatePoolWrite, ERROR_MESSAGES } from '@/hooks/useArmon'
 import { parseMON, formatMON } from '@/lib/armonClient'
+import { monadTestnet } from 'viem/chains'
 import { ArrowLeft, Info, Wallet, AlertCircle, CheckCircle, Coins, Users, Calendar } from 'lucide-react'
 
 export default function CreatePool() {
   const navigate = useNavigate()
-  const { address, isConnected } = useAccount()
+  const { address, isConnected, chain } = useAccount()
   const { connect, connectors, isPending } = useConnect()
-  const { write, isLoading, isSuccess, error, balance } = useCreatePoolWrite()
+  const { write, isLoading, isSuccess, error } = useCreatePoolWrite()
+
+  // Direct balance query with proper chain configuration
+  const { data: balance, isLoading: balanceLoading } = useBalance({
+    address,
+    chainId: monadTestnet.id,
+  })
 
   const [poolName, setPoolName] = useState('')
   const [iuranAmount, setIuranAmount] = useState('1')
@@ -53,6 +60,8 @@ export default function CreatePool() {
 
   const formatBalance = () => {
     if (!balance) return '0'
+    // Use formatted value directly from wagmi
+    if (balance.formatted) return parseFloat(balance.formatted).toFixed(4)
     return formatMON(balance.value)
   }
 
@@ -107,7 +116,9 @@ export default function CreatePool() {
           <div className="flex items-center gap-2">
             <div className="text-right">
               <p className="text-xs text-slate-400">Saldo</p>
-              <p className="text-sm font-mono text-secondary">{formatBalance()} MON</p>
+              <p className="text-sm font-mono text-secondary">
+                {balanceLoading ? '...' : formatBalance()} MON
+              </p>
             </div>
             <div className="px-3 py-1.5 bg-surface rounded-lg border border-slate-700">
               <p className="text-xs text-slate-400 font-mono">
