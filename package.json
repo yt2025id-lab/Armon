@@ -2,11 +2,11 @@
   "name": "armon",
   "version": "0.1.0",
   "description": "Decentralized arisan with AI-powered yield optimization on Monad",
-  "private": true,
+  "private": false,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "test": "vitest"
   },
