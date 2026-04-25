@@ -1,11 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAccount, useConnect, useBalance, useSwitchChain } from 'wagmi'
+import { createPublicClient, http } from 'viem'
+import { monadTestnet } from 'viem/chains'
 import { Button } from '@/components/ui/Button'
 import { useCreatePoolWrite, ERROR_MESSAGES } from '@/hooks/useArmon'
 import { parseMON, formatMON } from '@/lib/armonClient'
-import { monadTestnet } from 'viem/chains'
 import { ArrowLeft, Info, Wallet, AlertCircle, CheckCircle, Coins, Users, Calendar, RefreshCw } from 'lucide-react'
+
+// Create direct viem client for balance queries
+const viemClient = createPublicClient({
+  chain: monadTestnet,
+  transport: http('https://testnet-rpc.monad.xyz'),
+})
 
 // Add to MetaMask
 const MONAD_PARAMS = {
@@ -23,11 +30,35 @@ export default function CreatePool() {
   const { switchChain } = useSwitchChain()
   const { write, isLoading, isSuccess, error } = useCreatePoolWrite()
 
-  // Direct balance query with proper chain configuration
+  // Direct wagmi balance query
   const { data: balance, isLoading: balanceLoading, refetch: refetchBalance } = useBalance({
     address,
-    chainId: monadTestnet.id,
   })
+
+  // Direct balance fetch via viem as backup
+  const [directBalance, setDirectBalance] = useState<string | null>(null)
+  const [directBalanceLoading, setDirectBalanceLoading] = useState(false)
+
+  const fetchDirectBalance = useCallback(async () => {
+    if (!address) return
+    try {
+      setDirectBalanceLoading(true)
+      const balanceWei = await viemClient.getBalance({ address })
+      setDirectBalance(balanceWei.toString())
+      console.log('[Viem Direct Balance]', balanceWei.toString())
+    } catch (err) {
+      console.error('[Viem Balance Error]', err)
+    } finally {
+      setDirectBalanceLoading(false)
+    }
+  }, [address])
+
+  // Fetch direct balance on mount and when address changes
+  useEffect(() => {
+    if (address) {
+      fetchDirectBalance()
+    }
+  }, [address, fetchDirectBalance])
 
   // Debug: log balance changes
   useEffect(() => {
@@ -40,8 +71,9 @@ export default function CreatePool() {
       symbol: balance?.symbol,
       decimals: balance?.decimals,
       isLoading: balanceLoading,
+      directBalance,
     })
-  }, [balance, balanceLoading, address, chain])
+  }, [balance, balanceLoading, address, chain, directBalance])
 
   // Check if connected to wrong chain
   const isWrongChain = isConnected && chain && chain.id !== monadTestnet.id
@@ -74,12 +106,18 @@ export default function CreatePool() {
     }
   }
 
-  const formatBalance = () => {
-    if (!balance) return '0'
-    if (balanceLoading) return '...'
-    if (balance.formatted) return parseFloat(balance.formatted).toFixed(4)
-    return formatMON(balance.value)
+  // Use directBalance if available, otherwise use wagmi balance
+  const displayBalance = () => {
+    if (directBalance !== null) {
+      return formatMON(BigInt(directBalance))
+    }
+    if (balance) {
+      return formatMON(balance.value)
+    }
+    return '0'
   }
+
+  const isAnyLoading = balanceLoading || directBalanceLoading
 
   const [poolName, setPoolName] = useState('')
   const [iuranAmount, setIuranAmount] = useState('1')
@@ -96,17 +134,21 @@ export default function CreatePool() {
 
   // Check balance sufficiency - collateral = 125% dari total pool value
   const checkBalanceSufficiency = () => {
-    if (!balance) return false
+    const bal = directBalance !== null ? BigInt(directBalance) : (balance?.value ?? 0n)
+    if (bal === 0n && !directBalance && !balance) return false
     const requiredCollateral = parseMON(collateralPerPeserta.toString())
-    return balance.value >= requiredCollateral
+    return bal >= requiredCollateral
   }
 
   // Show insufficient balance warning
   useEffect(() => {
-    if (isConnected && balance && parseFloat(iuranAmount) > 0) {
-      setShowInsufficientBalance(!checkBalanceSufficiency())
+    if (isConnected && (directBalance !== null || balance)) {
+      const bal = directBalance !== null ? BigInt(directBalance) : balance?.value ?? 0n
+      if (bal > 0n || (balanceLoading && directBalance !== null)) {
+        setShowInsufficientBalance(!checkBalanceSufficiency())
+      }
     }
-  }, [balance, iuranAmount, isConnected])
+  }, [balance, balanceLoading, directBalance, iuranAmount, isConnected])
 
   const handleCreatePool = async () => {
     if (!poolName) return
@@ -180,7 +222,7 @@ export default function CreatePool() {
             <div className="text-right">
               <p className="text-xs text-slate-400">Saldo</p>
               <p className={`text-sm font-mono ${isWrongChain ? 'text-slate-600' : 'text-secondary'}`}>
-                {balanceLoading ? '...' : formatBalance()} MON
+                {isAnyLoading ? '...' : displayBalance()} MON
               </p>
             </div>
             <div className="px-3 py-1.5 bg-surface rounded-lg border border-slate-700">
@@ -309,7 +351,7 @@ export default function CreatePool() {
                 <p className="text-red-300/70 text-sm mt-1">
                   Collateral yang diperlukan: <span className="font-mono font-bold">{collateralPerPeserta.toFixed(4)} MON</span>
                   <br />
-                  Saldo Anda: <span className="font-mono font-bold">{formatBalance()} MON</span>
+                  Saldo Anda: <span className="font-mono font-bold">{displayBalance()} MON</span>
                 </p>
               </div>
             </div>
