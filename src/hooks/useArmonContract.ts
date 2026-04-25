@@ -1,7 +1,8 @@
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
+import { useReadContract, useWriteContract, useAccount } from 'wagmi'
 import { useMemo } from 'react'
-import { ARMON_ABI, ARMON_CONTRACT_ADDRESS } from '@/lib/constants'
-import type { Pool, PoolInfo, Participant } from '@/lib/types'
+import { ARMON_ABI } from '@/lib/abi'
+import { ARMON_ADDRESS } from '@/lib/contracts'
+import type { Pool, Participant } from '@/lib/types'
 import { getPrizeAmount } from '@/lib/utils'
 
 // ============================================================================
@@ -10,7 +11,7 @@ import { getPrizeAmount } from '@/lib/utils'
 
 export function usePoolCount() {
   return useReadContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getPoolCount',
   })
@@ -18,7 +19,7 @@ export function usePoolCount() {
 
 export function usePool(poolId: number) {
   return useReadContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getPool',
     args: [BigInt(poolId)],
@@ -27,7 +28,7 @@ export function usePool(poolId: number) {
 
 export function useActivePools() {
   return useReadContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getActivePools',
   })
@@ -35,7 +36,7 @@ export function useActivePools() {
 
 export function useCollateralRequired(poolId: number) {
   return useReadContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getCollateralRequired',
     args: [BigInt(poolId)],
@@ -44,7 +45,7 @@ export function useCollateralRequired(poolId: number) {
 
 export function useIsParticipant(poolId: number, address?: string) {
   return useReadContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'isParticipant',
     args: [BigInt(poolId), address as `0x${string}`],
@@ -55,7 +56,7 @@ export function useIsParticipant(poolId: number, address?: string) {
 export function useMyParticipant(poolId: number) {
   const { address } = useAccount()
   return useReadContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getParticipant',
     args: [BigInt(poolId), address as `0x${string}`],
@@ -65,7 +66,7 @@ export function useMyParticipant(poolId: number) {
 
 export function useParticipants(poolId: number) {
   return useReadContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getParticipants',
     args: [BigInt(poolId)],
@@ -74,7 +75,7 @@ export function useParticipants(poolId: number) {
 
 export function useWinners(poolId: number) {
   return useReadContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getWinners',
     args: [BigInt(poolId)],
@@ -90,7 +91,7 @@ export function useCreatePool() {
 
   const createPool = (name: string, iuranAmount: bigint, maxParticipants: number, totalPeriods: number) => {
     writeContract({
-      address: ARMON_CONTRACT_ADDRESS,
+      address: ARMON_ADDRESS,
       abi: ARMON_ABI,
       functionName: 'createPool',
       args: [name, iuranAmount, BigInt(maxParticipants), BigInt(totalPeriods)],
@@ -105,7 +106,7 @@ export function useJoinPool(poolId: number) {
 
   const joinPool = (collateralAmount: bigint) => {
     writeContract({
-      address: ARMON_CONTRACT_ADDRESS,
+      address: ARMON_ADDRESS,
       abi: ARMON_ABI,
       functionName: 'joinPool',
       args: [BigInt(poolId)],
@@ -121,7 +122,7 @@ export function usePayIuran(poolId: number) {
 
   const payIuran = (iuranAmount: bigint) => {
     writeContract({
-      address: ARMON_CONTRACT_ADDRESS,
+      address: ARMON_ADDRESS,
       abi: ARMON_ABI,
       functionName: 'payIuran',
       args: [BigInt(poolId)],
@@ -137,7 +138,7 @@ export function useDrawWinner(poolId: number) {
 
   const drawWinner = () => {
     writeContract({
-      address: ARMON_CONTRACT_ADDRESS,
+      address: ARMON_ADDRESS,
       abi: ARMON_ABI,
       functionName: 'drawWinner',
       args: [BigInt(poolId)],
@@ -152,7 +153,7 @@ export function useVoteWinner(poolId: number) {
 
   const voteWinner = (candidate: `0x${string}`) => {
     writeContract({
-      address: ARMON_CONTRACT_ADDRESS,
+      address: ARMON_ADDRESS,
       abi: ARMON_ABI,
       functionName: 'voteWinner',
       args: [BigInt(poolId), candidate],
@@ -167,7 +168,7 @@ export function useClaimPrize(poolId: number) {
 
   const claimPrize = () => {
     writeContract({
-      address: ARMON_CONTRACT_ADDRESS,
+      address: ARMON_ADDRESS,
       abi: ARMON_ABI,
       functionName: 'claimPrize',
       args: [BigInt(poolId)],
@@ -182,7 +183,7 @@ export function useWithdrawCollateral(poolId: number) {
 
   const withdrawCollateral = () => {
     writeContract({
-      address: ARMON_CONTRACT_ADDRESS,
+      address: ARMON_ADDRESS,
       abi: ARMON_ABI,
       functionName: 'withdrawCollateral',
       args: [BigInt(poolId)],
@@ -197,7 +198,7 @@ export function useClosePool(poolId: number) {
 
   const closePool = () => {
     writeContract({
-      address: ARMON_CONTRACT_ADDRESS,
+      address: ARMON_ADDRESS,
       abi: ARMON_ABI,
       functionName: 'closePool',
       args: [BigInt(poolId)],
@@ -219,35 +220,38 @@ export function usePoolWithParticipants(poolId: number) {
   return useMemo(() => {
     if (!pool) return null
 
+    // Handle both tuple and object response from viem
+    const poolData = Array.isArray(pool) ? pool : [pool.name, pool.iuranAmount, pool.maxParticipants, pool.collateralBps, pool.currentPeriod, pool.totalPeriods, pool.isActive, pool.owner, pool.createdAt, pool.lastDrawAt, pool.accumulatedYield, pool.participantCount]
+
     const poolInfo: Pool = {
       id: poolId,
-      name: pool[0],
-      iuranAmount: pool[1],
-      maxParticipants: Number(pool[2]),
-      collateralBps: Number(pool[3]),
-      currentPeriod: Number(pool[4]),
-      totalPeriods: Number(pool[5]),
-      isActive: pool[6],
-      owner: pool[7],
-      createdAt: pool[8],
-      lastDrawAt: pool[9],
-      accumulatedYield: pool[10],
-      participantCount: Number(pool[11]),
+      name: String(poolData[0] || ''),
+      iuranAmount: poolData[1] as bigint,
+      maxParticipants: Number(poolData[2]),
+      collateralBps: Number(poolData[3]),
+      currentPeriod: Number(poolData[4]),
+      totalPeriods: Number(poolData[5]),
+      isActive: Boolean(poolData[6]),
+      owner: String(poolData[7] || ''),
+      createdAt: poolData[8] as bigint,
+      lastDrawAt: poolData[9] as bigint,
+      accumulatedYield: poolData[10] as bigint,
+      participantCount: Number(poolData[11]),
     }
 
-    const participantsList: Participant[] = (participants || []).map((p: readonly [string, bigint, bigint, boolean, boolean, number]) => ({
-      wallet: p[0],
-      collateralDeposited: p[1],
-      yieldAccrued: p[2],
-      hasWon: p[3],
-      paidThisPeriod: p[4],
-      joinPeriod: p[5],
+    const participantsList: Participant[] = (participants || []).map((p: any) => ({
+      wallet: p.wallet || p[0] || '',
+      collateralDeposited: p.collateralDeposited || p[1] || 0n,
+      yieldAccrued: p.yieldAccrued || p[2] || 0n,
+      hasWon: p.hasWon || p[3] || false,
+      paidThisPeriod: p.paidThisPeriod || p[4] || false,
+      joinPeriod: p.joinPeriod || p[5] || 0,
     }))
 
     return {
       pool: poolInfo,
       participants: participantsList,
-      winners: winners || [],
+      winners: (winners || []) as `0x${string}`[],
       prizeAmount: getPrizeAmount(poolInfo.iuranAmount, poolInfo.participantCount),
       isLoading: poolLoading || participantsLoading,
       error: poolError,
@@ -263,7 +267,8 @@ export function useAllPools() {
     if (!poolCount || countLoading) return { pools: [], isLoading: true }
 
     const allPools: Pool[] = []
-    for (let i = 0; i < Number(poolCount); i++) {
+    const count = Number(poolCount)
+    for (let i = 0; i < count; i++) {
       allPools.push({
         id: i,
         name: '',
@@ -272,7 +277,7 @@ export function useAllPools() {
         collateralBps: 12500,
         currentPeriod: 0,
         totalPeriods: 0,
-        isActive: (activePoolIds || []).includes(i),
+        isActive: (activePoolIds || []).includes(BigInt(i)),
         owner: '0x',
         createdAt: 0n,
         lastDrawAt: 0n,

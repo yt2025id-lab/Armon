@@ -1,6 +1,7 @@
 import { createPublicClient, createWalletClient, http, custom, parseEther, formatEther } from 'viem'
 import { monadTestnet } from 'viem/chains'
-import { ARMON_CONTRACT_ADDRESS, ARMON_ABI } from './constants'
+import { ARMON_ADDRESS } from './contracts'
+import { ARMON_ABI } from './abi'
 
 // ============================================================================
 // Client Setup
@@ -40,7 +41,7 @@ export function parseMON(mon: string): bigint {
 
 export async function getPool(poolId: number) {
   return await publicClient.readContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getPool',
     args: [BigInt(poolId)],
@@ -49,7 +50,7 @@ export async function getPool(poolId: number) {
 
 export async function getActivePools(): Promise<bigint[]> {
   return await publicClient.readContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getActivePools',
   }) as bigint[]
@@ -57,7 +58,7 @@ export async function getActivePools(): Promise<bigint[]> {
 
 export async function getPoolCount(): Promise<bigint> {
   return await publicClient.readContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getPoolCount',
   }) as unknown as bigint
@@ -65,7 +66,7 @@ export async function getPoolCount(): Promise<bigint> {
 
 export async function getParticipants(poolId: number) {
   return await publicClient.readContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getParticipants',
     args: [BigInt(poolId)],
@@ -74,7 +75,7 @@ export async function getParticipants(poolId: number) {
 
 export async function getWinners(poolId: number): Promise<`0x${string}`[]> {
   return await publicClient.readContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getWinners',
     args: [BigInt(poolId)],
@@ -83,7 +84,7 @@ export async function getWinners(poolId: number): Promise<`0x${string}`[]> {
 
 export async function getCollateralRequired(poolId: number): Promise<bigint> {
   return await publicClient.readContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'getCollateralRequired',
     args: [BigInt(poolId)],
@@ -92,7 +93,7 @@ export async function getCollateralRequired(poolId: number): Promise<bigint> {
 
 export async function isParticipant(poolId: number, address: `0x${string}`): Promise<boolean> {
   return await publicClient.readContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'isParticipant',
     args: [BigInt(poolId), address],
@@ -111,7 +112,7 @@ export async function createPool(
   totalPeriods: number
 ): Promise<`0x${string}`> {
   return await walletClient.writeContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'createPool',
     args: [name, iuranAmount, BigInt(maxParticipants), BigInt(totalPeriods)],
@@ -124,7 +125,7 @@ export async function joinPool(
   value: bigint
 ): Promise<`0x${string}`> {
   return await walletClient.writeContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'joinPool',
     args: [BigInt(poolId)],
@@ -138,7 +139,7 @@ export async function payIuran(
   value: bigint
 ): Promise<`0x${string}`> {
   return await walletClient.writeContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'payIuran',
     args: [BigInt(poolId)],
@@ -151,7 +152,7 @@ export async function drawWinner(
   poolId: number
 ): Promise<`0x${string}`> {
   return await walletClient.writeContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'drawWinner',
     args: [BigInt(poolId)],
@@ -164,7 +165,7 @@ export async function voteWinner(
   candidate: `0x${string}`
 ): Promise<`0x${string}`> {
   return await walletClient.writeContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'voteWinner',
     args: [BigInt(poolId), candidate],
@@ -176,7 +177,7 @@ export async function claimPrize(
   poolId: number
 ): Promise<`0x${string}`> {
   return await walletClient.writeContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'claimPrize',
     args: [BigInt(poolId)],
@@ -188,7 +189,7 @@ export async function withdrawCollateral(
   poolId: number
 ): Promise<`0x${string}`> {
   return await walletClient.writeContract({
-    address: ARMON_CONTRACT_ADDRESS,
+    address: ARMON_ADDRESS,
     abi: ARMON_ABI,
     functionName: 'withdrawCollateral',
     args: [BigInt(poolId)],
