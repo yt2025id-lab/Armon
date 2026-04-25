@@ -43,25 +43,19 @@ export async function getPool(poolId: number) {
   return await publicClient.readContract({
     address: ARMON_ADDRESS,
     abi: ARMON_ABI,
-    functionName: 'getPool',
+    functionName: 'pools',
     args: [BigInt(poolId)],
   })
 }
 
 export async function getActivePools(): Promise<bigint[]> {
-  return await publicClient.readContract({
-    address: ARMON_ADDRESS,
-    abi: ARMON_ABI,
-    functionName: 'getActivePools',
-  }) as bigint[]
+  // pools mapping is public, return empty array as fallback
+  return []
 }
 
 export async function getPoolCount(): Promise<bigint> {
-  return await publicClient.readContract({
-    address: ARMON_ADDRESS,
-    abi: ARMON_ABI,
-    functionName: 'getPoolCount',
-  }) as unknown as bigint
+  // No getPoolCount function - return 0, will iterate manually
+  return 0n
 }
 
 export async function getParticipants(poolId: number) {

@@ -6,8 +6,6 @@ import {
   getActivePools as getActivePoolsFromChain,
   getParticipants,
   getWinners,
-  getCollateralRequired,
-  isParticipant,
   createPool,
   joinPool,
   payIuran,
@@ -66,7 +64,7 @@ export function useArmonParticipants(poolId: number) {
     try {
       setLoading(true)
       const data = await getParticipants(poolId)
-      setParticipants(data)
+      setParticipants([...data])
       setError(null)
     } catch (e: any) {
       setError(e.message)
@@ -130,14 +128,11 @@ export function useAllPoolsWithDetails() {
       setLoading(true)
       console.log('[useAllPools] Starting fetch...')
 
-      // Get pool count first
-      const count = await getPoolCount()
-      const poolCount = Number(count)
-      console.log('[useAllPools] Pool count:', poolCount)
-
-      // Fetch all pools
+      // Try to fetch pools by index - testnet Monad may have limited pools
+      const maxPoolsToTry = 10
       const allPools = []
-      for (let i = 0; i < poolCount; i++) {
+
+      for (let i = 0; i < maxPoolsToTry; i++) {
         try {
           const poolData = await getPool(i)
           console.log('[useAllPools] Pool', i, ':', poolData)
@@ -145,9 +140,12 @@ export function useAllPoolsWithDetails() {
             allPools.push({ id: i, ...poolData })
           }
         } catch (e) {
-          console.error('[useAllPools] Failed to fetch pool', i, e)
+          // Stop when we hit empty/non-existent pools
+          console.log('[useAllPools] Pool', i, 'failed:', e)
+          break
         }
       }
+      console.log('[useAllPools] Total pools found:', allPools.length)
       setPools(allPools)
       setError(null)
     } catch (e: any) {
