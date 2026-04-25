@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAccount, useWalletClient, useBalance } from 'wagmi'
 import {
   getPool,
+  getPoolCount,
   getActivePools as getActivePoolsFromChain,
   getParticipants,
   getWinners,
