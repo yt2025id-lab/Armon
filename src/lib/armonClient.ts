@@ -9,7 +9,7 @@ import { ARMON_ABI } from './abi'
 
 export const publicClient = createPublicClient({
   chain: monadTestnet,
-  transport: http('https://rpc.testnet.monad.xyz'),
+  transport: http(),
 })
 
 export function getWalletClient(walletClient: any) {

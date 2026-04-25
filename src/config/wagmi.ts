@@ -2,21 +2,9 @@ import { http, createConfig } from 'wagmi'
 import { monadTestnet } from 'viem/chains'
 import { injected, coinbaseWallet, walletConnect } from 'wagmi/connectors'
 
-// Create custom chain with proper RPC for balance queries
-const monadChain = {
-  ...monadTestnet,
-  rpcUrls: {
-    default: {
-      http: ['https://rpc.testnet.monad.xyz'],
-    },
-    public: {
-      http: ['https://rpc.testnet.monad.xyz'],
-    },
-  },
-}
-
+// Use viem's monadTestnet with correct RPC
 export const wagmiConfig = createConfig({
-  chains: [monadChain],
+  chains: [monadTestnet],
   connectors: [
     injected(),
     coinbaseWallet({ appName: 'Armon' }),
@@ -31,6 +19,6 @@ export const wagmiConfig = createConfig({
     }),
   ],
   transports: {
-    [monadChain.id]: http('https://rpc.testnet.monad.xyz'),
+    [monadTestnet.id]: http(),
   },
 })
