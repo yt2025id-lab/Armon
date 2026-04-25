@@ -124,18 +124,10 @@ export function useActivePools() {
 export function useCreatePoolWrite() {
   const { address } = useAccount()
   const { data: walletClient } = useWalletClient()
-  const { data: balance } = useBalance({ address })
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [txHash, setTxHash] = useState<`0x${string}` | null>(null)
-
-  // Check if balance is sufficient for collateral
-  const canCreatePool = useCallback((iuranAmount: string) => {
-    if (!balance) return false
-    const requiredCollateral = parseMON(iuranAmount) * 125n / 100n
-    return balance.value >= requiredCollateral
-  }, [balance])
 
   const write = useCallback(async (
     name: string,
@@ -145,12 +137,6 @@ export function useCreatePoolWrite() {
   ) => {
     if (!walletClient || !address) {
       setError(ERROR_MESSAGES.WALLET_NOT_CONNECTED)
-      return
-    }
-
-    // Check balance
-    if (!canCreatePool(iuranAmount)) {
-      setError(ERROR_MESSAGES.INSUFFICIENT_BALANCE)
       return
     }
 
@@ -180,9 +166,9 @@ export function useCreatePoolWrite() {
     } finally {
       setIsLoading(false)
     }
-  }, [walletClient, address, canCreatePool])
+  }, [walletClient, address])
 
-  return { write, isLoading, isSuccess, error, txHash, canCreatePool, balance }
+  return { write, isLoading, isSuccess, error, txHash }
 }
 
 export function useJoinPoolWrite(poolId: number, collateralValue: string) {

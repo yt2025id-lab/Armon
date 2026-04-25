@@ -133,10 +133,20 @@ export default function CreatePool() {
   const prizePerWinner = totalPoolValue
 
   // Check balance sufficiency - collateral = 125% dari total pool value
+  // collateral yang diperlukan = iuran × 1.25 (bukan total pool value)
   const checkBalanceSufficiency = () => {
+    const iuranWei = parseMON(iuranAmount)
+    // Collateral = 125% dari iuran per bulan
+    const requiredCollateral = iuranWei * 125n / 100n
+
     const bal = directBalance !== null ? BigInt(directBalance) : (balance?.value ?? 0n)
-    if (bal === 0n && !directBalance && !balance) return false
-    const requiredCollateral = parseMON(collateralPerPeserta.toString())
+    console.log('[Balance Check]', {
+      balance: bal.toString(),
+      required: requiredCollateral.toString(),
+      sufficient: bal >= requiredCollateral,
+      directBalance,
+      balanceValue: balance?.value?.toString(),
+    })
     return bal >= requiredCollateral
   }
 
@@ -144,7 +154,7 @@ export default function CreatePool() {
   useEffect(() => {
     if (isConnected && (directBalance !== null || balance)) {
       const bal = directBalance !== null ? BigInt(directBalance) : balance?.value ?? 0n
-      if (bal > 0n || (balanceLoading && directBalance !== null)) {
+      if (bal > 0n || directBalance === '0') {
         setShowInsufficientBalance(!checkBalanceSufficiency())
       }
     }
