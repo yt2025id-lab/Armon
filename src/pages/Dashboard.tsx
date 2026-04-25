@@ -4,7 +4,6 @@ import { WalletButton } from '@/components/WalletButton'
 import { Button } from '@/components/ui/Button'
 import { AIChatWidget } from '@/components/AIChatWidget'
 import { PoolCard } from '@/components/PoolCard'
-import { YieldOptimizer } from '@/components/YieldOptimizer'
 import { Pool } from '@/lib/types'
 import { COLLATERAL_BPS } from '@/lib/constants'
 import { Plus, Trophy, TrendingUp, Wallet } from 'lucide-react'
@@ -176,7 +175,25 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="max-w-2xl">
-            <YieldOptimizer collateralAmount={userStats.totalCollateral} />
+            <div className="bg-surface rounded-xl p-6 border border-slate-700">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-secondary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white">AI Yield Optimizer</h3>
+                  <p className="text-xs text-slate-400">Kelola collateral untuk yield terbaik</p>
+                </div>
+              </div>
+              <p className="text-slate-400 text-sm mb-4">
+                Optimasi yield untuk collateral Anda di berbagai protocol DeFi ekosistem Monad.
+              </p>
+              <Link to="/yield-optimizer">
+                <Button variant="secondary" className="w-full" leftIcon={<TrendingUp className="w-4 h-4" />}>
+                  Buka AI Yield Optimizer
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </div>

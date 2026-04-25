@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 import { WalletButton } from '@/components/WalletButton'
 import { Button } from '@/components/ui/Button'
-import { usePoolWithParticipants, useActivePools } from '@/hooks/useArmonContract'
+import { usePoolWithParticipants, useActivePools } from '@/hooks/useArmon'
 import { formatEther, getPoolStatus, truncateAddress } from '@/lib/utils'
 import { COLLATERAL_BPS } from '@/lib/constants'
 import {
@@ -75,6 +75,12 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <Link to="/dashboard">
               <Button variant="ghost" size="sm" className="hidden sm:flex">Dashboard</Button>
+            </Link>
+            <Link to="/yield-optimizer">
+              <Button variant="secondary" size="sm">
+                <TrendingUp className="w-4 h-4" />
+                AI Yield
+              </Button>
             </Link>
             <WalletButton />
           </div>
