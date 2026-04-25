@@ -1,23 +1,85 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAccount, useConnect, useBalance } from 'wagmi'
+import { useAccount, useConnect, useBalance, useSwitchChain } from 'wagmi'
 import { Button } from '@/components/ui/Button'
 import { useCreatePoolWrite, ERROR_MESSAGES } from '@/hooks/useArmon'
 import { parseMON, formatMON } from '@/lib/armonClient'
 import { monadTestnet } from 'viem/chains'
-import { ArrowLeft, Info, Wallet, AlertCircle, CheckCircle, Coins, Users, Calendar } from 'lucide-react'
+import { ArrowLeft, Info, Wallet, AlertCircle, CheckCircle, Coins, Users, Calendar, RefreshCw } from 'lucide-react'
+
+// Add to MetaMask
+const MONAD_PARAMS = {
+  chainId: '0x279F', // 10143 in hex
+  chainName: 'Monad Testnet',
+  nativeCurrency: { name: 'Testnet MON', symbol: 'MON', decimals: 18 },
+  rpcUrls: ['https://testnet-rpc.monad.xyz'],
+  blockExplorerUrls: ['https://testnet.monadexplorer.com'],
+}
 
 export default function CreatePool() {
   const navigate = useNavigate()
   const { address, isConnected, chain } = useAccount()
   const { connect, connectors, isPending } = useConnect()
+  const { switchChain } = useSwitchChain()
   const { write, isLoading, isSuccess, error } = useCreatePoolWrite()
 
   // Direct balance query with proper chain configuration
-  const { data: balance, isLoading: balanceLoading } = useBalance({
+  const { data: balance, isLoading: balanceLoading, refetch: refetchBalance } = useBalance({
     address,
     chainId: monadTestnet.id,
   })
+
+  // Debug: log balance changes
+  useEffect(() => {
+    console.log('[Balance Debug]', {
+      address,
+      chainId: monadTestnet.id,
+      chain: chain?.id,
+      balance: balance?.value?.toString(),
+      formatted: balance?.formatted,
+      symbol: balance?.symbol,
+      decimals: balance?.decimals,
+      isLoading: balanceLoading,
+    })
+  }, [balance, balanceLoading, address, chain])
+
+  // Check if connected to wrong chain
+  const isWrongChain = isConnected && chain && chain.id !== monadTestnet.id
+
+  // Add Monad to MetaMask
+  const addMonadNetwork = async () => {
+    if (!window.ethereum) return
+    try {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [MONAD_PARAMS],
+      })
+    } catch (err) {
+      console.error('Failed to add Monad network', err)
+    }
+  }
+
+  // Switch to Monad chain
+  const handleSwitchChain = async () => {
+    if (!window.ethereum) return
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x279F' }],
+      })
+    } catch (err: any) {
+      if (err.code === 4902) {
+        await addMonadNetwork()
+      }
+    }
+  }
+
+  const formatBalance = () => {
+    if (!balance) return '0'
+    if (balanceLoading) return '...'
+    if (balance.formatted) return parseFloat(balance.formatted).toFixed(4)
+    return formatMON(balance.value)
+  }
 
   const [poolName, setPoolName] = useState('')
   const [iuranAmount, setIuranAmount] = useState('1')
@@ -56,13 +118,6 @@ export default function CreatePool() {
     }
 
     await write(poolName, iuranAmount, maxParticipants, totalPeriods)
-  }
-
-  const formatBalance = () => {
-    if (!balance) return '0'
-    // Use formatted value directly from wagmi
-    if (balance.formatted) return parseFloat(balance.formatted).toFixed(4)
-    return formatMON(balance.value)
   }
 
   // ============ WALLET NOT CONNECTED STATE ============
@@ -114,9 +169,17 @@ export default function CreatePool() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {isWrongChain && (
+              <button
+                onClick={handleSwitchChain}
+                className="px-3 py-1.5 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-xs font-medium hover:bg-red-500/30 transition-colors"
+              >
+                Switch to Monad
+              </button>
+            )}
             <div className="text-right">
               <p className="text-xs text-slate-400">Saldo</p>
-              <p className="text-sm font-mono text-secondary">
+              <p className={`text-sm font-mono ${isWrongChain ? 'text-slate-600' : 'text-secondary'}`}>
                 {balanceLoading ? '...' : formatBalance()} MON
               </p>
             </div>
