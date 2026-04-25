@@ -4,12 +4,12 @@ import { injected, coinbaseWallet } from 'wagmi/connectors'
 
 // Monad Testnet configuration
 const MONAD_TESTNET = {
-  id: 1337,
+  id: 10159,
   name: 'Monad Testnet',
   nativeCurrency: {
     decimals: 18,
     name: 'Monad',
-    symbol: 'ETH',
+    symbol: 'MON',
   },
   rpcUrls: {
     default: {
