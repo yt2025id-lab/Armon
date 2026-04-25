@@ -18,13 +18,17 @@ export default function CreatePool() {
   const [totalPeriods, setTotalPeriods] = useState(6)
   const [showInsufficientBalance, setShowInsufficientBalance] = useState(false)
 
-  const collateralRequired = parseFloat(iuranAmount) * 1.25
-  const prizePerWinner = parseFloat(iuranAmount) * maxParticipants
+  // Total nilai pool = iuran × jumlah peserta (itu yang menjadi hadiah)
+  const totalPoolValue = parseFloat(iuranAmount) * maxParticipants
+  // Collateral per peserta = 125% × total nilai pool
+  const collateralPerPeserta = totalPoolValue * 1.25
+  // Hadiah per pemenang = total nilai pool (semua iuran dikumpulkan)
+  const prizePerWinner = totalPoolValue
 
-  // Check balance sufficiency
+  // Check balance sufficiency - collateral = 125% dari total pool value
   const checkBalanceSufficiency = () => {
     if (!balance) return false
-    const requiredCollateral = parseMON(iuranAmount.toString()) * 125n / 100n
+    const requiredCollateral = parseMON(collateralPerPeserta.toString())
     return balance.value >= requiredCollateral
   }
 
@@ -198,7 +202,7 @@ export default function CreatePool() {
               <div className="p-3 bg-surface rounded-lg">
                 <p className="text-slate-400 text-xs mb-1">Collateral per Peserta</p>
                 <p className="text-lg font-bold text-secondary font-mono">
-                  {collateralRequired.toFixed(4)} MON
+                  {collateralPerPeserta.toFixed(4)} MON
                 </p>
               </div>
               <div className="p-3 bg-surface rounded-lg">
@@ -229,7 +233,7 @@ export default function CreatePool() {
               <div>
                 <p className="text-red-400 font-medium">Saldo Tidak Cukup</p>
                 <p className="text-red-300/70 text-sm mt-1">
-                  Collateral yang diperlukan: <span className="font-mono font-bold">{collateralRequired.toFixed(4)} MON</span>
+                  Collateral yang diperlukan: <span className="font-mono font-bold">{collateralPerPeserta.toFixed(4)} MON</span>
                   <br />
                   Saldo Anda: <span className="font-mono font-bold">{formatBalance()} MON</span>
                 </p>
