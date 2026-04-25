@@ -2,7 +2,7 @@
 export const ARMON_ADDRESS = '0x7655E71507e8D114d774A236963418959084C8F2' as const
 
 export const MONAD_CHAIN = {
-  id: 10159, // 0x279f in hex
+  id: 10143, // 0x279f in hex
   name: 'Monad Testnet',
   network: 'monad-testnet',
   nativeCurrency: {

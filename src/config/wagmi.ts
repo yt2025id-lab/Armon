@@ -4,7 +4,7 @@ import { injected, coinbaseWallet } from 'wagmi/connectors'
 
 // Monad Testnet configuration
 const MONAD_TESTNET = {
-  id: 10159,
+  id: 10143,
   name: 'Monad Testnet',
   nativeCurrency: {
     decimals: 18,
