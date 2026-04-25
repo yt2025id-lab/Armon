@@ -2,20 +2,19 @@ import { Link } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 import { WalletButton } from '@/components/WalletButton'
 import { Button } from '@/components/ui/Button'
-import { usePoolWithParticipants, useActivePools } from '@/hooks/useArmon'
-import { formatEther, getPoolStatus, truncateAddress } from '@/lib/utils'
-import { COLLATERAL_BPS } from '@/lib/constants'
+import { useLanguage } from '@/hooks/useLanguage'
+import { t } from '@/lib/i18n'
 import {
   Plus,
   Users,
   TrendingUp,
   Shield,
   ArrowRight,
-  Trophy,
   Wallet,
-  Clock,
   Sparkles,
   ChevronRight,
+  Globe,
+  Trophy,
 } from 'lucide-react'
 
 // Mock pools for demo when contract not deployed
@@ -60,6 +59,7 @@ const mockPools = [
 
 export default function Home() {
   const { isConnected } = useAccount()
+  const { lang, setLang } = useLanguage()
 
   return (
     <div className="min-h-screen bg-background">
@@ -72,14 +72,21 @@ export default function Home() {
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/dashboard">
-              <Button variant="ghost" size="sm" className="hidden sm:flex">Dashboard</Button>
+              <Button variant="ghost" size="sm" className="hidden sm:flex">{t('dashboard', lang)}</Button>
             </Link>
             <Link to="/yield-optimizer">
               <Button variant="secondary" size="sm">
                 <TrendingUp className="w-4 h-4" />
-                AI Yield
+                {t('ai_yield', lang)}
               </Button>
             </Link>
+            <button
+              onClick={() => setLang(lang === 'id' ? 'en' : 'id')}
+              className="flex items-center gap-2 px-3 py-1.5 bg-surface rounded-lg border border-slate-700 hover:border-primary/50 transition-colors"
+            >
+              <Globe className="w-4 h-4 text-slate-400" />
+              <span className="text-sm font-medium">{lang === 'id' ? 'EN' : 'ID'}</span>
+            </button>
             <WalletButton />
           </div>
         </div>
@@ -94,30 +101,29 @@ export default function Home() {
         <div className="container mx-auto text-center max-w-4xl relative">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm text-primary font-medium">Decentralized Arisan on Monad</span>
+            <span className="text-sm text-primary font-medium">{t('decentralized_arisan', lang)} on Monad</span>
           </div>
 
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-            <span className="gradient-text">Arisan On-Chain</span>
+            <span className="gradient-text">{t('arisan_on_chain', lang)}</span>
             <br />
-            <span className="text-white">Trustless & Secure</span>
+            <span className="text-white">{t('trustless_secure', lang)}</span>
           </h1>
 
           <p className="text-slate-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-            Community savings pool dengan collateral 125%. Dapatkan yield dari collateral
-            sambil participates dalam arisan tradisional Indonesia.
+            {t('hero_description', lang)}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/create">
               <Button size="lg" className="w-full sm:w-auto px-8">
                 <Plus className="w-5 h-5" />
-                Buat Pool Baru
+                {t('create_pool_btn', lang)}
               </Button>
             </Link>
             <a href="#pools">
               <Button variant="secondary" size="lg" className="w-full sm:w-auto px-8">
-                Lihat Pool Aktif
+                {t('view_active_pools', lang)}
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </a>
@@ -127,15 +133,15 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
             <div className="text-center">
               <p className="text-3xl font-bold text-white">125%</p>
-              <p className="text-slate-400 text-sm mt-1">Collateral Security</p>
+              <p className="text-slate-400 text-sm mt-1">{t('collateral_security', lang)}</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-secondary">5%</p>
-              <p className="text-slate-400 text-sm mt-1">APY Yield</p>
+              <p className="text-slate-400 text-sm mt-1">{t('apy_yield', lang)}</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-accent">50</p>
-              <p className="text-slate-400 text-sm mt-1">Max Participants</p>
+              <p className="text-slate-400 text-sm mt-1">{t('max_participants_static', lang)}</p>
             </div>
           </div>
         </div>
@@ -145,9 +151,9 @@ export default function Home() {
       <section className="py-20 px-4 bg-surface/30">
         <div className="container mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Cara Kerja Armon</h2>
+            <h2 className="text-3xl font-bold mb-4">{t('how_armon_works', lang)}</h2>
             <p className="text-slate-400 max-w-xl mx-auto">
-              Sistem arisan modern yang dijalankan oleh smart contract, tidak ada intermediary.
+              {t('how_armon_works_desc', lang)}
             </p>
           </div>
 
@@ -155,29 +161,29 @@ export default function Home() {
             <StepCard
               number={1}
               icon={<Wallet className="w-6 h-6" />}
-              title="Buat Pool"
-              description="Tentukan nama, jumlah iuran, dan maksimal peserta."
+              title={t('step_1_title', lang)}
+              description={t('step_1_desc', lang)}
               color="primary"
             />
             <StepCard
               number={2}
               icon={<Users className="w-6 h-6" />}
-              title="Deposit Collateral"
-              description="Deposit 125% dari iuran sebagai jaminan keamanan."
+              title={t('step_2_title', lang)}
+              description={t('step_2_desc', lang)}
               color="secondary"
             />
             <StepCard
               number={3}
               icon={<TrendingUp className="w-6 h-6" />}
-              title="Bayar Iuran"
-              description="Bayar iuran bulanan dan accrue yield 5% APY."
+              title={t('step_3_title', lang)}
+              description={t('step_3_desc', lang)}
               color="accent"
             />
             <StepCard
               number={4}
               icon={<Trophy className="w-6 h-6" />}
-              title="Dapat Hadiah"
-              description="Undian atau voting untuk memilih pemenang."
+              title={t('step_4_title', lang)}
+              description={t('step_4_desc', lang)}
               color="pink"
             />
           </div>
@@ -189,13 +195,13 @@ export default function Home() {
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-10">
             <div>
-              <h2 className="text-2xl font-bold">Pool Aktif</h2>
-              <p className="text-slate-400 text-sm mt-1">Bergabung dengan pool arisan yang tersedia</p>
+              <h2 className="text-2xl font-bold">{t('active_pools', lang)}</h2>
+              <p className="text-slate-400 text-sm mt-1">{t('active_pools_desc', lang)}</p>
             </div>
             <Link to="/create">
               <Button variant="accent" size="sm">
                 <Plus className="w-4 h-4" />
-                Buat Pool Baru
+                {t('create_pool_btn', lang)}
               </Button>
             </Link>
           </div>
@@ -208,7 +214,7 @@ export default function Home() {
 
           {!isConnected && (
             <div className="mt-8 p-6 bg-surface/50 rounded-xl border border-dashed border-slate-700 text-center">
-              <p className="text-slate-400 mb-4">Connect wallet untuk membuat pool atau bergabung</p>
+              <p className="text-slate-400 mb-4">{t('connect_wallet_notice', lang)}</p>
               <WalletButton />
             </div>
           )}
@@ -221,20 +227,20 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <FeatureCard
               icon={<Shield className="w-8 h-8" />}
-              title="100% Trustless"
-              description="Semua rules dijalankan oleh smart contract. Tidak ada intermediary yang bisa manipulasi hasil."
+              title={t('trustless_feature', lang)}
+              description={t('trustless_desc', lang)}
               color="primary"
             />
             <FeatureCard
               icon={<TrendingUp className="w-8 h-8" />}
-              title="AI Yield Optimization"
-              description="Collateral kamu secara otomatis di-deposit ke protocol DeFi dengan yield tertinggi."
+              title={t('ai_optimization', lang)}
+              description={t('ai_optimization_desc', lang)}
               color="secondary"
             />
             <FeatureCard
               icon={<Users className="w-8 h-8" />}
-              title="Community Driven"
-              description="Pilih pemenang melalui voting atau random draw. Semuanya transparan di blockchain."
+              title={t('community_feature', lang)}
+              description={t('community_desc', lang)}
               color="accent"
             />
           </div>
@@ -250,8 +256,8 @@ export default function Home() {
               <span className="font-bold gradient-text">Armon</span>
             </div>
             <div className="text-center md:text-right">
-              <p className="text-slate-500 text-sm">Built for Monad Blitz Jogja 2026</p>
-              <p className="text-slate-600 text-xs mt-1">Decentralized Arisan Protocol</p>
+              <p className="text-slate-500 text-sm">{t('built_for', lang)}</p>
+              <p className="text-slate-600 text-xs mt-1">{t('decentralized_arisan_protocol', lang)}</p>
             </div>
           </div>
         </div>
@@ -324,6 +330,7 @@ function FeatureCard({
 }
 
 function PoolCardDemo({ pool }: { pool: typeof mockPools[0] }) {
+  const { lang } = useLanguage()
   const statusColors = {
     active: 'bg-secondary/20 text-secondary border-secondary/30',
     pending: 'bg-accent/20 text-accent border-accent/30',
@@ -341,27 +348,27 @@ function PoolCardDemo({ pool }: { pool: typeof mockPools[0] }) {
           {pool.name}
         </h3>
         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${statusColors[pool.status]}`}>
-          {pool.status === 'active' && 'Aktif'}
-          {pool.status === 'pending' && 'Menunggu'}
-          {pool.status === 'drawing' && 'Undian'}
+          {pool.status === 'active' && t('active', lang)}
+          {pool.status === 'pending' && t('pending', lang)}
+          {pool.status === 'drawing' && t('drawing', lang)}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-5">
         <div>
-          <p className="text-slate-400 text-xs mb-1">Iuran Bulanan</p>
+          <p className="text-slate-400 text-xs mb-1">{t('monthly_fee', lang)}</p>
           <p className="text-lg font-bold text-secondary font-mono">{pool.iuranAmount} MON</p>
         </div>
         <div>
-          <p className="text-slate-400 text-xs mb-1">Hadiah</p>
+          <p className="text-slate-400 text-xs mb-1">{t('prize', lang)}</p>
           <p className="text-lg font-bold text-accent font-mono">{pool.prizeAmount} MON</p>
         </div>
         <div>
-          <p className="text-slate-400 text-xs mb-1">Peserta</p>
+          <p className="text-slate-400 text-xs mb-1">{t('participants', lang)}</p>
           <p className="text-white font-medium">{pool.participants}/{pool.maxParticipants}</p>
         </div>
         <div>
-          <p className="text-slate-400 text-xs mb-1">Periode</p>
+          <p className="text-slate-400 text-xs mb-1">{t('period', lang)}</p>
           <p className="text-white font-medium">{pool.currentPeriod}/{pool.totalPeriods}</p>
         </div>
       </div>
@@ -394,7 +401,7 @@ function PoolCardDemo({ pool }: { pool: typeof mockPools[0] }) {
             style={{ width: `${(pool.participants / pool.maxParticipants) * 100}%` }}
           />
         </div>
-        <p className="text-xs text-slate-500 mt-1 text-right">{pool.participants} dari {pool.maxParticipants} peserta</p>
+        <p className="text-xs text-slate-500 mt-1 text-right">{pool.participants} {t('of', lang)} {pool.maxParticipants} {t('participants', lang)}</p>
       </div>
     </Link>
   )
