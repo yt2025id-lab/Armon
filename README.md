@@ -4,7 +4,7 @@
   <img src="public/logo.png" alt="Armon Logo" width="200"/>
 </p>
 
-> **Arisan tradisional Indonesia, dieksekusi secara trustless di blockchain Monad**
+> **Traditional Indonesian Arisan, Executed Trustlessly on Monad Blockchain**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
@@ -13,33 +13,33 @@
 
 ## 🎯 What is Armon?
 
-**Armon** adalah decentralized arisan platform yang menggabungkan budaya arisan tradisional Indonesia dengan teknologi blockchain. Dengan smart contract dan AI-powered yield optimizer, Armon memberikan:
+**Armon** is a decentralized arisan platform that combines traditional Indonesian arisan culture with blockchain technology. With smart contracts and AI-powered yield optimizer, Armon delivers:
 
-- **Trustless Execution** - Tidak ada intermediary, semua aturan dijalankan oleh smart contract
-- **125% Collateral Security** - Deposit collateral 125% dari iuran untuk keamanan pool
-- **AI Yield Optimization** - AI secara otomatis mencari yield tertinggi di ekosistem Monad DeFi
-- **Bilingual Support** - Mendukung Bahasa Indonesia & English
+- **Trustless Execution** - No intermediary, all rules executed by smart contracts
+- **125% Collateral Security** - Deposit 125% collateral for pool safety
+- **AI Yield Optimization** - AI automatically finds highest yields in Monad DeFi ecosystem
+- **Bilingual Support** - Supports Indonesian & English with toggle
 
 ## ✨ Features
 
 ### Core Features
 | Feature | Description |
 |---------|-------------|
-| 🏊 **Pool Creation** | Buat arisan pool dengan kustomisasi jumlah peserta, iuran, dan periode |
-| 👥 **Participant Management** | Join pool dengan deposit collateral, lacak status pembayaran |
-| 🎲 **Winner Selection** | Random draw atau voting system untuk memilih pemenang |
-| 💰 **Prize Distribution** | Pemenang klaim hadiah dari total pool |
-| 🔄 **Collateral Withdrawal** | Collateral + yield dikembalikan di akhir pool |
+| 🏊 **Pool Creation** | Create arisan pool with customizable participants, contribution, and periods |
+| 👥 **Participant Management** | Join pool with collateral deposit, track payment status |
+| 🎲 **Winner Selection** | Random draw or voting system to select winners |
+| 💰 **Prize Distribution** | Winners claim prizes from total pool |
+| 🔄 **Collateral Withdrawal** | Collateral + yield returned when pool ends |
 
 ### AI Yield Optimizer
-- Analisis real-time yield dari 6+ protokol DeFi Monad
-- Rekomendasi otomatis berdasarkan risk appetite
-- Visualisasi comparison yield dengan historical data
+- Real-time yield analysis from 6+ Monad DeFi protocols
+- Auto recommendation based on risk appetite
+- Visual comparison with historical data
 
 ### Security
-- **125% Collateral** - Setiap peserta deposit 125% dari iuran bulanan
-- **Smart Contract Verified** - Semua transaksi on-chain dan transparan
-- **No Middleman** - Trustless execution tanpa intermediary
+- **125% Collateral** - Each participant deposits 125% of monthly contribution
+- **Smart Contract Verified** - All transactions on-chain and transparent
+- **No Middleman** - Trustless execution without intermediary
 
 ## 🏆 Tech Stack
 
@@ -49,7 +49,7 @@
 | **Smart Contract** | Solidity (Foundry) |
 | **Blockchain** | Monad Testnet (Chain ID: 10159) |
 | **Wallet Integration** | WalletConnect, MetaMask, Coinbase Wallet |
-| **AI Engine** | Rule-based yield optimizer dengan mock data |
+| **AI Engine** | Rule-based yield optimizer with mock data |
 
 ## 🚀 Quick Start
 
@@ -129,43 +129,43 @@ Armon/
 ## 🔧 How It Works
 
 ### 1. Create Pool
-Pool owner membuat arisan dengan menentukan:
-- Nama pool
-- Jumlah iuran bulanan (dalam MON)
-- Maksimal peserta (3-50)
-- Total periode (1-12 bulan)
+Pool owner creates arisan with:
+- Pool name
+- Monthly contribution (in MON)
+- Max participants (3-50)
+- Total periods (1-12 months)
 
 ### 2. Join Pool
-Peserta deposit collateral 125% dari iuran bulanan:
+Participants deposit 125% of monthly contribution:
 ```
-Collateral Required = Iuran × 1.25
-Example: Iuran 1 MON → Collateral 1.25 MON
+Collateral Required = Contribution × 1.25
+Example: 1 MON contribution → 1.25 MON collateral
 ```
 
 ### 3. Pay Iuran
-Peserta bayar iuran bulanan setiap tanggal 1-10. Collateral accrues yield dari protokol DeFi.
+Participants pay monthly contribution on 1st-10th of each month. Collateral accrues yield from DeFi protocols.
 
 ### 4. Draw Winner
-Di akhir setiap periode:
-- **Random Draw**: VRF-based random selection, atau
-- **Voting**: Participants vote untuk pilih pemenang
+At end of each period:
+- **Random Draw**: VRF-based random selection, or
+- **Voting**: Participants vote to select winner
 
 ### 5. Claim Prize
-Penang klaim hadiah = Total Iuran Pool:
+Winner claims prize = Total Pool Contributions:
 ```
-Prize = Iuran per Bulan × Jumlah Peserta
-Example: 1 MON × 6 peserta = 6 MON hadiah
+Prize = Monthly Contribution × Number of Participants
+Example: 1 MON × 6 participants = 6 MON prize
 ```
 
 ### 6. Withdraw Collateral
-Setelah pool selesai atau peserta sudah menang:
+After pool ends or participant has won:
 ```
-Withdrawal = Collateral + Yield Accrued
+Withdrawal = Collateral + Accrued Yield
 ```
 
 ## 🤖 AI Yield Optimizer
 
-Armon AI menganalisis yield dari protokol DeFi Monad:
+Armon AI analyzes yields from Monad DeFi protocols:
 
 | Protocol | APY | Risk |
 |----------|-----|------|
@@ -176,7 +176,7 @@ Armon AI menganalisis yield dari protokol DeFi Monad:
 | Bullish | 20.5% | Medium |
 | Defi.ai | 28.0% | High |
 
-AI memberikan rekomendasi berdasarkan:
+AI provides recommendations based on:
 - Risk tolerance (Low / Medium / High)
 - Yield optimization strategy
 - Historical performance
