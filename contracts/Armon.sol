@@ -60,6 +60,7 @@ contract Armon {
     mapping(uint256 => mapping(uint256 => Participant)) public poolParticipants; // poolId => index => Participant
     mapping(uint256 => address[]) public poolParticipantList; // poolId => list of addresses
     mapping(uint256 => mapping(address => uint256)) public participantIndex; // poolId => wallet => index
+    mapping(uint256 => mapping(address => bool)) public isParticipantMap; // poolId => wallet => bool
     mapping(uint256 => address[]) public poolWinners;
     mapping(uint256 => mapping(address => uint256)) public votes;
     mapping(uint256 => Vote[]) public poolVotes;
@@ -146,6 +147,7 @@ contract Armon {
 
         poolParticipantList[_poolId].push(msg.sender);
         participantIndex[_poolId][msg.sender] = newIndex;
+        isParticipantMap[_poolId][msg.sender] = true;
         pool.participantCount++;
 
         emit JoinedPool(_poolId, msg.sender, collateralRequired);
@@ -201,10 +203,10 @@ contract Armon {
         }
         require(eligibleCount > 0, "No eligible participants");
 
-        // Pseudo-random selection
+        // Pseudo-random selection (using block data for MVP)
         uint256 randomNumber = uint256(keccak256(abi.encodePacked(
             block.timestamp,
-            block.prevrandao,
+            block.difficulty,
             msg.sender,
             _poolId,
             pool.currentPeriod
@@ -337,13 +339,12 @@ contract Armon {
     }
 
     function isParticipant(uint256 _poolId, address _wallet) public view returns (bool) {
-        return participantIndex[_poolId][_wallet] != 0 ||
-               (poolParticipantList[_poolId].length > 0 && poolParticipantList[_poolId][0] == _wallet);
+        return isParticipantMap[_poolId][_wallet];
     }
 
     function getParticipant(uint256 _poolId, address _wallet) external view returns (Participant memory) {
+        require(isParticipantMap[_poolId][_wallet], "Not participant");
         uint256 idx = participantIndex[_poolId][_wallet];
-        require(idx != 0 || (poolParticipantList[_poolId].length > 0 && poolParticipantList[_poolId][0] == _wallet), "Not participant");
         return poolParticipants[_poolId][idx];
     }
 
