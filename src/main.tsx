@@ -1,17 +1,26 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
 import { WagmiProvider } from 'wagmi'
-import { config } from '@/lib/wagmi'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter } from 'react-router-dom'
 import App from './App'
+import { wagmiConfig } from '@/config/wagmi'
 import './index.css'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <WagmiProvider config={config}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </WagmiProvider>
-  </StrictMode>,
-)
+const queryClient = new QueryClient()
+
+function Main() {
+  return (
+    <StrictMode>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </StrictMode>
+  )
+}
+
+createRoot(document.getElementById('root')!).render(<Main />)
