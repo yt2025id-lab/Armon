@@ -1,37 +1,53 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { WalletButton } from '@/components/WalletButton'
+import { useAccount, useConnect } from 'wagmi'
 import { Button } from '@/components/ui/Button'
 import { AIChatWidget } from '@/components/AIChatWidget'
-import { ArrowLeft, Info } from 'lucide-react'
-
-interface PoolConfig {
-  name: string
-  iuranAmount: string
-  maxParticipants: number
-  totalPeriods: number
-}
+import { useCreatePoolWrite } from '@/hooks/useArmon'
+import { ArrowLeft, Info, Wallet, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function CreatePool() {
   const navigate = useNavigate()
-  const [config, setConfig] = useState<PoolConfig>({
-    name: '',
-    iuranAmount: '1',
-    maxParticipants: 4,
-    totalPeriods: 6,
-  })
-  const [isDeploying, setIsDeploying] = useState(false)
+  const { address, isConnected } = useAccount()
+  const { connect, connectors, isPending } = useConnect()
+  const { write, isLoading, isSuccess, error } = useCreatePoolWrite()
 
-  const collateralRequired = parseFloat(config.iuranAmount) * 1.25
-  const prizePerWinner = parseFloat(config.iuranAmount) * config.maxParticipants
+  const [poolName, setPoolName] = useState('')
+  const [iuranAmount, setIuranAmount] = useState('1')
+  const [maxParticipants, setMaxParticipants] = useState(4)
+  const [totalPeriods, setTotalPeriods] = useState(6)
 
-  const handleDeploy = () => {
-    setIsDeploying(true)
-    // Simulate deployment
-    setTimeout(() => {
-      setIsDeploying(false)
-      navigate('/pool/0')
-    }, 2000)
+  const collateralRequired = parseFloat(iuranAmount) * 1.25
+  const prizePerWinner = parseFloat(iuranAmount) * maxParticipants
+
+  const handleCreatePool = async () => {
+    if (!poolName) return
+    await write(poolName, iuranAmount, maxParticipants, totalPeriods)
+  }
+
+  if (!isConnected) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center p-8 bg-surface rounded-xl border border-slate-700 max-w-md">
+          <Wallet className="w-12 h-12 text-primary mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-white mb-2">Connect Wallet</h2>
+          <p className="text-slate-400 mb-6">Kamu perlu connect wallet dulu untuk membuat pool.</p>
+          <div className="space-y-2">
+            {connectors.map((connector) => (
+              <Button
+                key={connector.uid}
+                variant="primary"
+                className="w-full"
+                onClick={() => connect({ connector })}
+                disabled={isPending}
+              >
+                {isPending ? 'Connecting...' : `Connect ${connector.name}`}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -43,9 +59,11 @@ export default function CreatePool() {
             <button onClick={() => navigate('/')} className="p-2 hover:bg-surface rounded-lg transition-colors">
               <ArrowLeft className="w-5 h-5 text-slate-400" />
             </button>
-            <span className="text-lg font-semibold">Buat Pool Baru</span>
+            <span className="text-lg font-semibold text-white">Buat Pool Baru</span>
           </div>
-          <WalletButton />
+          <div className="text-sm text-slate-400 font-mono">
+            {address?.slice(0, 6)}...{address?.slice(-4)}
+          </div>
         </div>
       </header>
 
@@ -58,8 +76,8 @@ export default function CreatePool() {
             </label>
             <input
               type="text"
-              value={config.name}
-              onChange={(e) => setConfig({ ...config, name: e.target.value })}
+              value={poolName}
+              onChange={(e) => setPoolName(e.target.value)}
               placeholder="Contoh: Arisan RT05 Tanah Abang"
               className="w-full px-4 py-3 bg-background border border-slate-600 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-primary"
             />
@@ -75,10 +93,9 @@ export default function CreatePool() {
                 type="number"
                 min="0.1"
                 step="0.1"
-                value={config.iuranAmount}
-                onChange={(e) => setConfig({ ...config, iuranAmount: e.target.value })}
-                placeholder="1"
-                className="w-full px-4 py-3 bg-background border border-slate-600 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-primary font-mono"
+                value={iuranAmount}
+                onChange={(e) => setIuranAmount(e.target.value)}
+                className="w-full px-4 py-3 bg-background border border-slate-600 rounded-lg text-white font-mono focus:outline-none focus:border-primary"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
                 MON
@@ -89,11 +106,11 @@ export default function CreatePool() {
           {/* Max Participants */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Maksimal Peserta
+              Maksimal Peserta (3-50)
             </label>
             <select
-              value={config.maxParticipants}
-              onChange={(e) => setConfig({ ...config, maxParticipants: parseInt(e.target.value) })}
+              value={maxParticipants}
+              onChange={(e) => setMaxParticipants(parseInt(e.target.value))}
               className="w-full px-4 py-3 bg-background border border-slate-600 rounded-lg text-white focus:outline-none focus:border-primary"
             >
               {[3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50].map(n => (
@@ -108,8 +125,8 @@ export default function CreatePool() {
               Total Periode (Bulan)
             </label>
             <select
-              value={config.totalPeriods}
-              onChange={(e) => setConfig({ ...config, totalPeriods: parseInt(e.target.value) })}
+              value={totalPeriods}
+              onChange={(e) => setTotalPeriods(parseInt(e.target.value))}
               className="w-full px-4 py-3 bg-background border border-slate-600 rounded-lg text-white focus:outline-none focus:border-primary"
             >
               {[1, 2, 3, 4, 5, 6, 8, 10, 12].map(n => (
@@ -125,25 +142,25 @@ export default function CreatePool() {
               <div>
                 <p className="text-slate-400">Collateral per peserta</p>
                 <p className="text-lg font-bold text-secondary font-mono">
-                  {collateralRequired} MON
+                  {collateralRequired.toFixed(4)} MON
                 </p>
               </div>
               <div>
                 <p className="text-slate-400">Hadiah per winner</p>
                 <p className="text-lg font-bold text-accent font-mono">
-                  {prizePerWinner} MON
-                </p>
-              </div>
-              <div>
-                <p className="text-slate-400">Total hadiah pool</p>
-                <p className="text-lg font-bold text-primary font-mono">
-                  {prizePerWinner * config.totalPeriods} MON
+                  {prizePerWinner.toFixed(4)} MON
                 </p>
               </div>
               <div>
                 <p className="text-slate-400">Durasi</p>
                 <p className="text-lg font-bold text-white">
-                  {config.totalPeriods} bulan
+                  {totalPeriods} bulan
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400">Total Pool Value</p>
+                <p className="text-lg font-bold text-primary font-mono">
+                  {(prizePerWinner * totalPeriods).toFixed(4)} MON
                 </p>
               </div>
             </div>
@@ -155,10 +172,10 @@ export default function CreatePool() {
               <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div className="text-sm text-slate-300">
                 <p className="mb-2">
-                  <strong className="text-white">Collateral 125%</strong> - Setiap peserta harus deposit collateral sejumlah 125% dari iuran bulanan untuk keamanan pool.
+                  <strong className="text-white">Collateral 125%</strong> - Setiap peserta deposit collateral sejumlah 125% dari iuran bulanan.
                 </p>
                 <p>
-                  Collateral akan dikembalikan beserta yield (5% APY) setelah arisan selesai atau setelah peserta mendapat giliran.
+                  Collateral dikembalikan beserta yield setelah arisan selesai atau setelah peserta mendapat giliran.
                 </p>
               </div>
             </div>
@@ -166,17 +183,27 @@ export default function CreatePool() {
 
           {/* Deploy Button */}
           <Button
-            onClick={handleDeploy}
-            disabled={!config.name || isDeploying}
+            onClick={handleCreatePool}
+            disabled={!poolName || isLoading}
             className="w-full"
             size="lg"
           >
-            {isDeploying ? (
-              <span className="animate-pulse">Deploying...</span>
-            ) : (
-              'Deploy Pool'
-            )}
+            {isLoading ? 'Creating...' : isSuccess ? 'Pool Created!' : 'Create Pool'}
           </Button>
+
+          {isSuccess && (
+            <div className="mt-4 p-4 bg-secondary/20 border border-secondary/30 rounded-lg flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-secondary" />
+              <span className="text-secondary font-medium">Pool berhasil dibuat!</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="mt-4 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-400" />
+              <span className="text-red-400 font-medium">Error: {error}</span>
+            </div>
+          )}
         </div>
       </div>
 

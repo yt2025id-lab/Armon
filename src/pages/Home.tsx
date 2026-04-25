@@ -1,60 +1,21 @@
 import { Link } from 'react-router-dom'
-import { WalletButton } from '@/components/WalletButton'
-import { PoolCard } from '@/components/PoolCard'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { Button } from '@/components/ui/Button'
+import { PoolCard } from '@/components/PoolCard'
 import { AIChatWidget } from '@/components/AIChatWidget'
-import { COLLATERAL_BPS } from '@/lib/constants'
-import { Pool } from '@/lib/types'
-import { Plus, Users, TrendingUp, Shield, ArrowRight } from 'lucide-react'
-
-// Mock data for demo
-const mockPools: Pool[] = [
-  {
-    id: 0,
-    name: 'Arisan RT05 Tanah Abang',
-    iuranAmount: BigInt('5000000000000000000'),
-    maxParticipants: 6,
-    collateralBps: COLLATERAL_BPS,
-    participants: [
-      { wallet: '0x1234567890123456789012345678901234567890', collateralDeposited: BigInt('6250000000000000000'), yieldAccrued: BigInt('0'), hasWon: false, paidThisPeriod: true, joinPeriod: 1 },
-      { wallet: '0x2345678901234567890123456789012345678901', collateralDeposited: BigInt('6250000000000000000'), yieldAccrued: BigInt('0'), hasWon: false, paidThisPeriod: true, joinPeriod: 1 },
-      { wallet: '0x3456789012345678901234567890123456789012', collateralDeposited: BigInt('6250000000000000000'), yieldAccrued: BigInt('0'), hasWon: false, paidThisPeriod: false, joinPeriod: 1 },
-      { wallet: '0x4567890123456789012345678901234567890123', collateralDeposited: BigInt('6250000000000000000'), yieldAccrued: BigInt('0'), hasWon: false, paidThisPeriod: false, joinPeriod: 1 },
-    ],
-    currentPeriod: 2,
-    totalPeriods: 6,
-    isActive: true,
-    owner: '0x1234567890123456789012345678901234567890',
-    createdAt: Date.now() - 30 * 24 * 60 * 60 * 1000,
-    lastDrawAt: Date.now() - 25 * 24 * 60 * 60 * 1000,
-    accumulatedYield: BigInt('250000000000000000'),
-  },
-  {
-    id: 1,
-    name: 'Arisan Kantor区块',
-    iuranAmount: BigInt('1000000000000000000'),
-    maxParticipants: 4,
-    collateralBps: COLLATERAL_BPS,
-    participants: [
-      { wallet: '0x5678901234567890123456789012345678901234', collateralDeposited: BigInt('1250000000000000000'), yieldAccrued: BigInt('0'), hasWon: false, paidThisPeriod: true, joinPeriod: 1 },
-      { wallet: '0x6789012345678901234567890123456789012345', collateralDeposited: BigInt('1250000000000000000'), yieldAccrued: BigInt('0'), hasWon: false, paidThisPeriod: true, joinPeriod: 1 },
-      { wallet: '0x7890123456789012345678901234567890123456', collateralDeposited: BigInt('1250000000000000000'), yieldAccrued: BigInt('0'), hasWon: false, paidThisPeriod: true, joinPeriod: 1 },
-    ],
-    currentPeriod: 1,
-    totalPeriods: 4,
-    isActive: true,
-    owner: '0x5678901234567890123456789012345678901234',
-    createdAt: Date.now() - 7 * 24 * 60 * 60 * 1000,
-    lastDrawAt: Date.now() - 7 * 24 * 60 * 60 * 1000,
-    accumulatedYield: BigInt('50000000000000000'),
-  },
-]
+import { useActivePools } from '@/hooks/useArmon'
+import { Plus, Users, TrendingUp, Shield, ArrowRight, Wallet } from 'lucide-react'
 
 export default function Home() {
+  const { address, isConnected } = useAccount()
+  const { connect, connectors, isPending } = useConnect()
+  const { disconnect } = useDisconnect()
+  const { data: activePoolIds, isLoading } = useActivePools()
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-slate-800">
+      <header className="border-b border-slate-800 sticky top-0 bg-background/80 backdrop-blur-sm z-40">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
@@ -66,7 +27,27 @@ export default function Home() {
             <Link to="/dashboard">
               <Button variant="ghost" size="sm">Dashboard</Button>
             </Link>
-            <WalletButton />
+            {isConnected ? (
+              <Button variant="secondary" size="sm" onClick={() => disconnect()}>
+                <Wallet className="w-4 h-4" />
+                {address?.slice(0, 6)}...{address?.slice(-4)}
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                {connectors.map((connector) => (
+                  <Button
+                    key={connector.uid}
+                    variant="primary"
+                    size="sm"
+                    onClick={() => connect({ connector })}
+                    disabled={isPending}
+                  >
+                    <Wallet className="w-4 h-4" />
+                    {isPending ? 'Connecting...' : `Connect ${connector.name}`}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -74,6 +55,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto text-center max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full mb-6">
+            <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+            <span className="text-sm text-primary font-medium">Live on Monad Testnet</span>
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="gradient-text">Arisan On-Chain</span>
             <br />
@@ -112,7 +97,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold mb-2">1. Buat Pool</h3>
               <p className="text-slate-400 text-sm">
                 Tentukan nama, jumlah iuran, dan maksimal peserta.
-                Collaterall 125% dari iuran ditambahkan oleh setiap peserta.
+                Collateral 125% dari iuran ditambahkan oleh setiap peserta.
               </p>
             </div>
             <div className="text-center p-6">
@@ -122,7 +107,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold mb-2">2. Bayar Iuran</h3>
               <p className="text-slate-400 text-sm">
                 Bayar iuran bulanan tanggal 1-10.
-                Collateral kamu accruing yield 5% APY setiap bulan.
+                Collateral kamu accruing yield setiap bulan.
               </p>
             </div>
             <div className="text-center p-6">
@@ -152,15 +137,20 @@ export default function Home() {
             </Link>
           </div>
 
-          {mockPools.length > 0 ? (
+          {isLoading ? (
+            <div className="text-center py-16">
+              <div className="animate-pulse text-slate-400">Loading pools...</div>
+            </div>
+          ) : activePoolIds && activePoolIds.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockPools.map(pool => (
-                <PoolCard key={pool.id} pool={pool} />
+              {activePoolIds.map((poolId) => (
+                <PoolCard key={poolId} poolId={Number(poolId)} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 bg-surface rounded-xl">
+            <div className="text-center py-16 bg-surface rounded-xl border border-slate-700">
               <p className="text-slate-400 mb-4">Belum ada pool aktif</p>
+              <p className="text-sm text-slate-500 mb-4">Jadilah yang pertama membuat pool arisan!</p>
               <Link to="/create">
                 <Button>Buat Pool Pertama</Button>
               </Link>
@@ -173,7 +163,7 @@ export default function Home() {
       <footer className="py-8 px-4 border-t border-slate-800">
         <div className="container mx-auto text-center text-slate-500 text-sm">
           <p>Built for Monad Blitz Jogja 2026</p>
-          <p className="mt-1">Armon - Decentralized Arisan Protocol</p>
+          <p className="mt-1">Contract: 0x7655E71507e8D114d774A236963418959084C8F2</p>
         </div>
       </footer>
 
