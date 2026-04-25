@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useAccount, useConnect, useDisconnect, useWalletClient } from 'wagmi'
+import { useAccount, useWalletClient, useBalance } from 'wagmi'
 import {
   getPool,
   getActivePools as getActivePoolsFromChain,
@@ -18,6 +18,16 @@ import {
   formatMON,
   parseMON,
 } from '@/lib/armonClient'
+
+// ============ ERROR MESSAGES (Indonesian) ============
+export const ERROR_MESSAGES = {
+  WALLET_NOT_CONNECTED: 'Wallet belum terhubung. Silakan hubungkan wallet terlebih dahulu.',
+  INSUFFICIENT_BALANCE: 'Saldo tidak cukup untuk melakukan transaksi ini.',
+  TRANSACTION_FAILED: 'Transaksi gagal. Silakan coba lagi.',
+  POOL_NOT_FOUND: 'Pool tidak ditemukan.',
+  USER_REJECTED: 'Transaksi dibatalkan oleh pengguna.',
+  NETWORK_ERROR: 'Kesalahan jaringan. Silakan coba lagi.',
+}
 
 // ============ CUSTOM HOOKS ============
 
@@ -114,10 +124,18 @@ export function useActivePools() {
 export function useCreatePoolWrite() {
   const { address } = useAccount()
   const { data: walletClient } = useWalletClient()
+  const { data: balance } = useBalance({ address })
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [txHash, setTxHash] = useState<`0x${string}` | null>(null)
+
+  // Check if balance is sufficient for collateral
+  const canCreatePool = useCallback((iuranAmount: string) => {
+    if (!balance) return false
+    const requiredCollateral = parseMON(iuranAmount) * 125n / 100n
+    return balance.value >= requiredCollateral
+  }, [balance])
 
   const write = useCallback(async (
     name: string,
@@ -126,7 +144,13 @@ export function useCreatePoolWrite() {
     totalPeriods: number
   ) => {
     if (!walletClient || !address) {
-      setError('Wallet not connected')
+      setError(ERROR_MESSAGES.WALLET_NOT_CONNECTED)
+      return
+    }
+
+    // Check balance
+    if (!canCreatePool(iuranAmount)) {
+      setError(ERROR_MESSAGES.INSUFFICIENT_BALANCE)
       return
     }
 
@@ -147,25 +171,42 @@ export function useCreatePoolWrite() {
       setIsSuccess(true)
       return hash
     } catch (e: any) {
-      setError(e.message)
+      // Handle user rejection
+      if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+        setError(ERROR_MESSAGES.USER_REJECTED)
+      } else {
+        setError(e.message || ERROR_MESSAGES.TRANSACTION_FAILED)
+      }
     } finally {
       setIsLoading(false)
     }
-  }, [walletClient, address])
+  }, [walletClient, address, canCreatePool])
 
-  return { write, isLoading, isSuccess, error, txHash }
+  return { write, isLoading, isSuccess, error, txHash, canCreatePool, balance }
 }
 
 export function useJoinPoolWrite(poolId: number, collateralValue: string) {
   const { address } = useAccount()
   const { data: walletClient } = useWalletClient()
+  const { data: balance } = useBalance({ address })
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const canJoinPool = useCallback(() => {
+    if (!balance) return false
+    const required = parseMON(collateralValue)
+    return balance.value >= required
+  }, [balance, collateralValue])
+
   const write = useCallback(async () => {
     if (!walletClient || !address) {
-      setError('Wallet not connected')
+      setError(ERROR_MESSAGES.WALLET_NOT_CONNECTED)
+      return
+    }
+
+    if (!canJoinPool()) {
+      setError(ERROR_MESSAGES.INSUFFICIENT_BALANCE)
       return
     }
 
@@ -183,25 +224,41 @@ export function useJoinPoolWrite(poolId: number, collateralValue: string) {
       setIsSuccess(true)
       return hash
     } catch (e: any) {
-      setError(e.message)
+      if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+        setError(ERROR_MESSAGES.USER_REJECTED)
+      } else {
+        setError(e.message || ERROR_MESSAGES.TRANSACTION_FAILED)
+      }
     } finally {
       setIsLoading(false)
     }
-  }, [walletClient, address, poolId, collateralValue])
+  }, [walletClient, address, poolId, collateralValue, canJoinPool])
 
-  return { write, isLoading, isSuccess, error }
+  return { write, isLoading, isSuccess, error, canJoinPool, balance }
 }
 
 export function usePayIuranWrite(poolId: number, iuranValue: string) {
   const { address } = useAccount()
   const { data: walletClient } = useWalletClient()
+  const { data: balance } = useBalance({ address })
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const canPayIuran = useCallback(() => {
+    if (!balance) return false
+    const required = parseMON(iuranValue)
+    return balance.value >= required
+  }, [balance, iuranValue])
+
   const write = useCallback(async () => {
     if (!walletClient || !address) {
-      setError('Wallet not connected')
+      setError(ERROR_MESSAGES.WALLET_NOT_CONNECTED)
+      return
+    }
+
+    if (!canPayIuran()) {
+      setError(ERROR_MESSAGES.INSUFFICIENT_BALANCE)
       return
     }
 
@@ -219,13 +276,17 @@ export function usePayIuranWrite(poolId: number, iuranValue: string) {
       setIsSuccess(true)
       return hash
     } catch (e: any) {
-      setError(e.message)
+      if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+        setError(ERROR_MESSAGES.USER_REJECTED)
+      } else {
+        setError(e.message || ERROR_MESSAGES.TRANSACTION_FAILED)
+      }
     } finally {
       setIsLoading(false)
     }
-  }, [walletClient, address, poolId, iuranValue])
+  }, [walletClient, address, poolId, iuranValue, canPayIuran])
 
-  return { write, isLoading, isSuccess, error }
+  return { write, isLoading, isSuccess, error, canPayIuran, balance }
 }
 
 export function useDrawWinnerWrite(poolId: number) {
@@ -237,7 +298,7 @@ export function useDrawWinnerWrite(poolId: number) {
 
   const write = useCallback(async () => {
     if (!walletClient || !address) {
-      setError('Wallet not connected')
+      setError(ERROR_MESSAGES.WALLET_NOT_CONNECTED)
       return
     }
 
@@ -250,7 +311,11 @@ export function useDrawWinnerWrite(poolId: number) {
       setIsSuccess(true)
       return hash
     } catch (e: any) {
-      setError(e.message)
+      if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+        setError(ERROR_MESSAGES.USER_REJECTED)
+      } else {
+        setError(e.message || ERROR_MESSAGES.TRANSACTION_FAILED)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -268,7 +333,7 @@ export function useVoteWinnerWrite(poolId: number, candidate: `0x${string}`) {
 
   const write = useCallback(async () => {
     if (!walletClient || !address) {
-      setError('Wallet not connected')
+      setError(ERROR_MESSAGES.WALLET_NOT_CONNECTED)
       return
     }
 
@@ -281,7 +346,11 @@ export function useVoteWinnerWrite(poolId: number, candidate: `0x${string}`) {
       setIsSuccess(true)
       return hash
     } catch (e: any) {
-      setError(e.message)
+      if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+        setError(ERROR_MESSAGES.USER_REJECTED)
+      } else {
+        setError(e.message || ERROR_MESSAGES.TRANSACTION_FAILED)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -299,7 +368,7 @@ export function useClaimPrizeWrite(poolId: number) {
 
   const write = useCallback(async () => {
     if (!walletClient || !address) {
-      setError('Wallet not connected')
+      setError(ERROR_MESSAGES.WALLET_NOT_CONNECTED)
       return
     }
 
@@ -312,7 +381,11 @@ export function useClaimPrizeWrite(poolId: number) {
       setIsSuccess(true)
       return hash
     } catch (e: any) {
-      setError(e.message)
+      if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+        setError(ERROR_MESSAGES.USER_REJECTED)
+      } else {
+        setError(e.message || ERROR_MESSAGES.TRANSACTION_FAILED)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -330,7 +403,7 @@ export function useWithdrawCollateralWrite(poolId: number) {
 
   const write = useCallback(async () => {
     if (!walletClient || !address) {
-      setError('Wallet not connected')
+      setError(ERROR_MESSAGES.WALLET_NOT_CONNECTED)
       return
     }
 
@@ -343,7 +416,11 @@ export function useWithdrawCollateralWrite(poolId: number) {
       setIsSuccess(true)
       return hash
     } catch (e: any) {
-      setError(e.message)
+      if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+        setError(ERROR_MESSAGES.USER_REJECTED)
+      } else {
+        setError(e.message || ERROR_MESSAGES.TRANSACTION_FAILED)
+      }
     } finally {
       setIsLoading(false)
     }
