@@ -1,16 +1,10 @@
 import { http, createConfig } from 'wagmi'
 import { monadTestnet } from 'viem/chains'
-import { injected, coinbaseWallet } from 'wagmi/connectors'
+import { injected, coinbaseWallet, walletConnect } from 'wagmi/connectors'
 
-// Monad Testnet configuration
-const MONAD_TESTNET = {
-  id: 10143,
-  name: 'Monad Testnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Monad',
-    symbol: 'MON',
-  },
+// Create custom chain with proper RPC for balance queries
+const monadChain = {
+  ...monadTestnet,
   rpcUrls: {
     default: {
       http: ['https://rpc.testnet.monad.xyz'],
@@ -19,21 +13,24 @@ const MONAD_TESTNET = {
       http: ['https://rpc.testnet.monad.xyz'],
     },
   },
-  blockExplorers: {
-    default: {
-      name: 'Monad Explorer',
-      url: 'https://explorer.testnet.monad.xyz',
-    },
-  },
-} as const
+}
 
 export const wagmiConfig = createConfig({
-  chains: [MONAD_TESTNET],
+  chains: [monadChain],
   connectors: [
     injected(),
     coinbaseWallet({ appName: 'Armon' }),
+    walletConnect({
+      projectId: 'armon-walletconnect',
+      metadata: {
+        name: 'Armon',
+        description: 'Decentralized Arisan on Monad',
+        url: window.location.origin,
+        icons: [`${window.location.origin}/logo.png`],
+      },
+    }),
   ],
   transports: {
-    [MONAD_TESTNET.id]: http('https://rpc.testnet.monad.xyz'),
+    [monadChain.id]: http('https://rpc.testnet.monad.xyz'),
   },
 })
