@@ -127,25 +127,30 @@ export function useAllPoolsWithDetails() {
   const fetchAllPools = useCallback(async () => {
     try {
       setLoading(true)
+      console.log('[useAllPools] Starting fetch...')
+
       // Get pool count first
       const count = await getPoolCount()
       const poolCount = Number(count)
+      console.log('[useAllPools] Pool count:', poolCount)
 
       // Fetch all pools
       const allPools = []
       for (let i = 0; i < poolCount; i++) {
         try {
           const poolData = await getPool(i)
+          console.log('[useAllPools] Pool', i, ':', poolData)
           if (poolData) {
             allPools.push({ id: i, ...poolData })
           }
         } catch (e) {
-          // Skip failed pool fetches
+          console.error('[useAllPools] Failed to fetch pool', i, e)
         }
       }
       setPools(allPools)
       setError(null)
     } catch (e: any) {
+      console.error('[useAllPools] Error:', e.message)
       setError(e.message)
     } finally {
       setLoading(false)

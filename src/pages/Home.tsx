@@ -63,7 +63,10 @@ const mockPools = [
 export default function Home() {
   const { isConnected } = useAccount()
   const { lang, setLang } = useLanguage()
-  const { pools: realPools, loading: realPoolsLoading } = useAllPoolsWithDetails()
+  const { pools: realPools, loading: realPoolsLoading, error: realPoolsError } = useAllPoolsWithDetails()
+
+  // Debug: show realPools in console
+  console.log('[Home] realPools:', realPools, 'count:', realPools.length)
 
   // Convert real pools to display format
   const formatRealPool = (pool: any) => {
@@ -255,11 +258,24 @@ export default function Home() {
               <span className="ml-3 text-slate-400">{t('loading_pool', lang)}</span>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {allPools.map((pool, idx) => (
-                <PoolCardDemo key={`${pool.isReal ? 'real' : 'mock'}-${pool.id}`} pool={pool} />
-              ))}
-            </div>
+            <>
+              {/* Debug info - show real pools count */}
+              {realPools.length > 0 && (
+                <div className="mb-6 p-4 bg-secondary/10 border border-secondary/20 rounded-xl">
+                  <p className="text-secondary font-medium">Pool dari Blockchain: {realPools.length}</p>
+                </div>
+              )}
+              {realPoolsError && (
+                <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl mb-4">
+                  <p className="text-red-400 text-sm">Error: {realPoolsError}</p>
+                </div>
+              )}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {allPools.map((pool, idx) => (
+                  <PoolCardDemo key={`${pool.isReal ? 'real' : 'mock'}-${pool.id}`} pool={pool} />
+                ))}
+              </div>
+            </>
           )}
 
           {!isConnected && (
