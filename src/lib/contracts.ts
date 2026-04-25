@@ -1,5 +1,5 @@
 // Armon Contract Configuration
-export const ARMON_ADDRESS = '0xbfe9eddf56faa8ea339d847493bd4a626f503afb' as const
+export const ARMON_ADDRESS = '0x0F14fc3bfAc3726172aCd08Fe4bFb79B633E76ff' as const
 
 export const MONAD_CHAIN = {
   id: 10143, // 0x279f in hex
