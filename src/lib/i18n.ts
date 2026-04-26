@@ -97,8 +97,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Landing page
     decentralized_arisan: 'Arisan On-Chain',
-    arisan_on_chain: 'Arisan On-Chain',
-    trustless_secure: 'Trustless & Secure',
+    hero_title_line1: 'Jutaan Orang Indonesia',
+    hero_title_line2: 'Sudah Paham DeFi',
     hero_description: 'Community savings pool dengan collateral 125%. Dapatkan yield dari collateral sambil berpartisipasi dalam arisan tradisional Indonesia.',
     create_pool_btn: 'Buat Pool Baru',
     view_active_pools: 'Lihat Pool Aktif',

@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import type { ReactNode, ButtonHTMLAttributes } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'accent' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'outline'
   size?: 'sm' | 'md' | 'lg'
   leftIcon?: ReactNode
   rightIcon?: ReactNode
@@ -30,6 +30,7 @@ export function Button({
           'bg-secondary hover:bg-secondary/90 text-white shadow-lg shadow-secondary/25': variant === 'secondary',
           'bg-accent hover:bg-accent/90 text-background shadow-lg shadow-accent/25': variant === 'accent',
           'bg-transparent hover:bg-surface text-slate-300 border border-slate-700': variant === 'ghost',
+          'bg-transparent hover:bg-surface text-white glass border border-white/20 hover:border-white/40': variant === 'outline',
         },
         {
           'px-3 py-1.5 text-sm rounded-lg': size === 'sm',
