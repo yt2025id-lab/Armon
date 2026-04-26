@@ -78,7 +78,7 @@ export default function Home() {
           <Link to="/" className="flex items-center gap-3">
             <div className="relative">
               <img src="/logo.png" alt="Armon" className="w-10 h-10 rounded-xl object-contain" />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#f8672d] rounded-full animate-pulse" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#8B5CF6] rounded-full animate-pulse" />
             </div>
             <span className="text-xl font-bold text-white">ARMON</span>
           </Link>
@@ -96,7 +96,7 @@ export default function Home() {
             </Link>
             <button
               onClick={() => setLang(lang === 'id' ? 'en' : 'id')}
-              className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 hover:border-[#f8672d]/50 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 hover:border-[#8B5CF6]/50 transition-colors"
             >
               <Globe className="w-4 h-4 text-white/50" />
               <span className="text-sm font-medium text-white">{lang === 'id' ? 'EN' : 'ID'}</span>
@@ -143,7 +143,7 @@ export default function Home() {
           <div className="w-full md:w-[80%] lg:w-[40%] flex flex-col gap-6 text-center lg:text-left">
             {/* Orange decorative lines */}
             <div className="w-full h-[80px] md:h-[120px] lg:h-[150px] object-cover rounded-xl lg:rounded-none overflow-hidden">
-              <div className="w-full h-full bg-gradient-to-r from-[#f8672d] via-[#ff8c42] to-[#f8672d] opacity-80" />
+              <div className="w-full h-full bg-gradient-to-r from-[#8B5CF6] via-[#ff8c42] to-[#8B5CF6] opacity-80" />
             </div>
             <p className="text-lg md:text-2xl lg:text-3xl text-white tracking-tighter">
               {lang === 'id'
@@ -164,11 +164,11 @@ export default function Home() {
       <StripeMarquee lang={lang} className="transform lg:rotate-3 translate-y-[-20%] lg:translate-x-[-5%]" />
 
       {/* Mission Section - Orange Background */}
-      <section className="w-full min-h-screen flex md:items-center lg:items-start bg-[#f8672d] relative z-[2] overflow-visible">
+      <section className="w-full min-h-screen flex md:items-center lg:items-start bg-[#8B5CF6] relative z-[2] overflow-visible">
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-          <div className="w-20 h-20 md:w-32 md:h-32 rounded-full bg-[#222222] border-[8px] md:border-[12px] border-[#f8672d] flex items-center justify-center">
+          <div className="w-20 h-20 md:w-32 md:h-32 rounded-full bg-[#222222] border-[8px] md:border-[12px] border-[#8B5CF6] flex items-center justify-center">
             <ChevronRight
-              className="w-8 h-8 md:w-10 md:h-10 text-[#f8672d] rotate-90"
+              className="w-8 h-8 md:w-10 md:h-10 text-[#8B5CF6] rotate-90"
               strokeWidth={2.5}
             />
           </div>
@@ -206,7 +206,7 @@ export default function Home() {
             <h2 className="text-[70px] sm:text-[80px] md:text-[100px] lg:text-[130px] leading-[0.8] text-white font-bold scale-y-[1.3] lg:scale-y-[2] tracking-[-0.05em] lg:tracking-[-0.1em] origin-top mb-4">
               {lang === 'id' ? 'CARA KERJA' : 'HOW IT'}
             </h2>
-            <h2 className="text-[70px] sm:text-[80px] md:text-[100px] lg:text-[130px] leading-[0.8] text-[#f8672d] font-bold scale-y-[1.3] lg:scale-y-[2] tracking-[-0.05em] lg:tracking-[-0.1em] origin-top">
+            <h2 className="text-[70px] sm:text-[80px] md:text-[100px] lg:text-[130px] leading-[0.8] text-[#8B5CF6] font-bold scale-y-[1.3] lg:scale-y-[2] tracking-[-0.05em] lg:tracking-[-0.1em] origin-top">
               {lang === 'id' ? 'ARMON' : 'WORKS'}
             </h2>
           </div>
@@ -249,7 +249,7 @@ export default function Home() {
         <div className="mb-12 text-center">
           <h2 className="text-[50px] lg:text-[90px] leading-[0.8] font-bold scale-y-[1.3] lg:scale-y-[2] tracking-[-0.05em] lg:tracking-[-0.1em] origin-top mb-6 whitespace-nowrap">
             <span className="text-white">{lang === 'id' ? 'ACTIVE' : 'ACTIVE'}</span>{' '}
-            <span className="text-[#f8672d]">{lang === 'id' ? 'POOLS' : 'POOLS'}</span>
+            <span className="text-[#8B5CF6]">{lang === 'id' ? 'POOLS' : 'POOLS'}</span>
           </h2>
           <p className="text-white/50 text-lg">{t('active_pools_desc', lang)}</p>
         </div>
@@ -273,7 +273,7 @@ export default function Home() {
         <div className="mb-12 text-center">
           <h2 className="text-[50px] lg:text-[90px] leading-[0.8] font-bold scale-y-[1.3] lg:scale-y-[2] tracking-[-0.05em] lg:tracking-[-0.1em] origin-top mb-6 whitespace-nowrap">
             <span className="text-white">{lang === 'id' ? 'KEY' : 'KEY'}</span>{' '}
-            <span className="text-[#f8672d]">{lang === 'id' ? 'FEATURES' : 'FEATURES'}</span>
+            <span className="text-[#8B5CF6]">{lang === 'id' ? 'FEATURES' : 'FEATURES'}</span>
           </h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -328,7 +328,7 @@ function StripeMarquee({ className, lang }: { className?: string; lang: 'id' | '
     <div
       className={`relative w-full lg:w-[110%] h-[100px] md:h-[150px] overflow-hidden flex items-center justify-center bg-transparent z-[3] ${className}`}
     >
-      <div className="absolute w-full bg-[#f8672d] shadow-2xl border-y-[8px] md:border-y-[12px] border-black">
+      <div className="absolute w-full bg-[#8B5CF6] shadow-2xl border-y-[8px] md:border-y-[12px] border-black">
         <div className="w-full my-2 py-4 md:py-6 flex overflow-hidden">
           <div
             className="flex w-max animate-marquee"
@@ -390,7 +390,7 @@ function CardBestOffer({ lang }: { lang: 'id' | 'en' }) {
       </div>
 
       <div className="flex flex-col relative z-10 pt-2 pl-1 md:pl-2">
-        <span className="text-[#f8672d] font-bold text-base md:text-lg tracking-wide uppercase">
+        <span className="text-[#8B5CF6] font-bold text-base md:text-lg tracking-wide uppercase">
           {lang === 'id' ? 'BEST DEALS' : 'BEST OFFER'}
         </span>
 
@@ -400,12 +400,12 @@ function CardBestOffer({ lang }: { lang: 'id' | 'en' }) {
           </span>
         </div>
         <div className="flex items-end gap-2 md:gap-3 mb-2">
-          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] leading-[0.9] font-black text-[#f8672d] tracking-[-0.03em]">
+          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] leading-[0.9] font-black text-[#8B5CF6] tracking-[-0.03em]">
             {lang === 'id' ? 'Earn up to 8% APY and more' : 'Earn up to 8% APY and more'}
           </span>
         </div>
       </div>
-      <div className="w-full aspect-[4/3] bg-[#f8672d] border-4 md:border-[6px] border-[#1a1a1a] rounded-2xl md:rounded-3xl relative overflow-hidden mt-4 md:mt-6">
+      <div className="w-full aspect-[4/3] bg-[#8B5CF6] border-4 md:border-[6px] border-[#1a1a1a] rounded-2xl md:rounded-3xl relative overflow-hidden mt-4 md:mt-6">
         <img
           src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=450&fit=crop"
           alt="Community"
@@ -431,7 +431,7 @@ function StepCard({
   color: string
 }) {
   const colors = {
-    primary: 'bg-[#f8672d] text-white',
+    primary: 'bg-[#8B5CF6] text-white',
     secondary: 'bg-white/10 text-white',
     accent: 'bg-white/10 text-white',
     pink: 'bg-white/10 text-white',
@@ -442,7 +442,7 @@ function StepCard({
       <div className={`inline-flex p-3 rounded-xl ${colors[color as keyof typeof colors]} mb-4 group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
-      <div className="w-8 h-8 rounded-full bg-[#f8672d] flex items-center justify-center text-sm font-black text-white mb-4">
+      <div className="w-8 h-8 rounded-full bg-[#8B5CF6] flex items-center justify-center text-sm font-black text-white mb-4">
         {number}
       </div>
       <h3 className="text-lg font-bold text-white mb-2 uppercase">{title}</h3>
@@ -464,14 +464,14 @@ function FeatureCard({
   color: string
 }) {
   const colors = {
-    primary: 'from-[#f8672d]/10 to-transparent border-[#f8672d]/20',
+    primary: 'from-[#8B5CF6]/10 to-transparent border-[#8B5CF6]/20',
     secondary: 'from-white/5 to-transparent border-white/10',
     accent: 'from-white/5 to-transparent border-white/10',
   }
 
   return (
-    <div className={`p-8 rounded-2xl bg-gradient-to-br ${colors[color as keyof typeof colors]} border border-white/5 hover:scale-[1.02] hover:shadow-xl hover:shadow-[#f8672d]/5 transition-all duration-300`}>
-      <div className="w-14 h-14 rounded-2xl bg-[#111] flex items-center justify-center mb-6 text-[#f8672d]">
+    <div className={`p-8 rounded-2xl bg-gradient-to-br ${colors[color as keyof typeof colors]} border border-white/5 hover:scale-[1.02] hover:shadow-xl hover:shadow-[#8B5CF6]/5 transition-all duration-300`}>
+      <div className="w-14 h-14 rounded-2xl bg-[#111] flex items-center justify-center mb-6 text-[#8B5CF6]">
         {icon}
       </div>
       <h3 className="text-xl font-bold text-white mb-3 uppercase">{title}</h3>
@@ -485,7 +485,7 @@ function PoolCardDemo({ pool }: { pool: typeof mockPools[0] }) {
   const { lang } = useLanguage()
   const statusColors = {
     active: 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]/30',
-    pending: 'bg-[#f8672d]/20 text-[#f8672d] border-[#f8672d]/30',
+    pending: 'bg-[#8B5CF6]/20 text-[#8B5CF6] border-[#8B5CF6]/30',
     drawing: 'bg-[#6366F1]/20 text-[#6366F1] border-[#6366F1]/30',
     completed: 'bg-white/10 text-white/40 border-white/20',
   }
@@ -493,10 +493,10 @@ function PoolCardDemo({ pool }: { pool: typeof mockPools[0] }) {
   return (
     <Link
       to={`/pool/${pool.id}`}
-      className="group block bg-[#111] rounded-2xl p-5 sm:p-6 border border-white/5 hover:border-[#f8672d]/50 hover:shadow-xl hover:shadow-[#f8672d]/10 transition-all duration-300"
+      className="group block bg-[#111] rounded-2xl p-5 sm:p-6 border border-white/5 hover:border-[#8B5CF6]/50 hover:shadow-xl hover:shadow-[#8B5CF6]/10 transition-all duration-300"
     >
       <div className="flex justify-between items-start mb-4">
-        <h3 className="font-bold text-lg text-white group-hover:text-[#f8672d] transition-colors line-clamp-1 uppercase">
+        <h3 className="font-bold text-lg text-white group-hover:text-[#8B5CF6] transition-colors line-clamp-1 uppercase">
           {pool.name}
         </h3>
         <span className={`px-3 py-1 rounded-full text-xs font-semibold border flex-shrink-0 ml-2 uppercase ${statusColors[pool.status]}`}>
@@ -513,7 +513,7 @@ function PoolCardDemo({ pool }: { pool: typeof mockPools[0] }) {
         </div>
         <div>
           <p className="text-white/30 text-xs mb-1 uppercase tracking-wider">{t('prize', lang)}</p>
-          <p className="text-lg font-black text-[#f8672d] font-mono">{pool.prizeAmount} MON</p>
+          <p className="text-lg font-black text-[#8B5CF6] font-mono">{pool.prizeAmount} MON</p>
         </div>
         <div>
           <p className="text-white/30 text-xs mb-1 uppercase tracking-wider">{t('participants', lang)}</p>
@@ -530,7 +530,7 @@ function PoolCardDemo({ pool }: { pool: typeof mockPools[0] }) {
           {[...Array(Math.min(pool.participants, 5))].map((_, i) => (
             <div
               key={i}
-              className="w-8 h-8 rounded-full bg-[#f8672d]/20 border-2 border-[#111] flex items-center justify-center text-xs text-[#f8672d] font-semibold"
+              className="w-8 h-8 rounded-full bg-[#8B5CF6]/20 border-2 border-[#111] flex items-center justify-center text-xs text-[#8B5CF6] font-semibold"
             >
               {String.fromCharCode(65 + i)}
             </div>
@@ -541,13 +541,13 @@ function PoolCardDemo({ pool }: { pool: typeof mockPools[0] }) {
             </div>
           )}
         </div>
-        <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-[#f8672d] group-hover:translate-x-1 transition-all" />
+        <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-[#8B5CF6] group-hover:translate-x-1 transition-all" />
       </div>
 
       <div className="mt-4">
         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#f8672d] to-[#ff8c42] rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-[#8B5CF6] to-[#ff8c42] rounded-full transition-all duration-500"
             style={{ width: `${(pool.participants / pool.maxParticipants) * 100}%` }}
           />
         </div>
